@@ -278,9 +278,37 @@ class H(SimpleHTTPRequestHandler):
         self.j({'erro': 'rota não encontrada'}, 404)
 
 
+def criar_atalho_menu_em_cima():
+    """Windows: cria na área de trabalho o atalho da versão com menu em cima (uma vez só)."""
+    import subprocess
+    import sys
+    if not sys.platform.startswith('win'):
+        return
+    bat = str(RAIZ / 'iniciar_menu_em_cima.bat').replace("'", "''")
+    pasta = str(RAIZ).replace("'", "''")
+    cmd = ("$d=[Environment]::GetFolderPath('Desktop'); $p=Join-Path $d 'Gestao de Ensaios M3 (menu em cima).lnk'; "
+           "if(!(Test-Path $p)){ $s=(New-Object -ComObject WScript.Shell).CreateShortcut($p); "
+           "$s.TargetPath='%s'; $s.WorkingDirectory='%s'; $s.Save() }" % (bat, pasta))
+    try:
+        subprocess.run(['powershell', '-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', cmd],
+                       timeout=20, capture_output=True)
+    except Exception:
+        pass
+
+
 if __name__ == '__main__':
+    import socket
+    import sys
+    menu = 'topo' if 'topo' in sys.argv[1:] else 'lateral'
+    url = 'http://localhost:%d/?menu=%s' % (PORTA, menu)
+    with socket.socket() as sk:
+        em_uso = sk.connect_ex(('127.0.0.1', PORTA)) == 0
+    if em_uso:  # o painel já está aberto em outra janela: só abre o navegador na versão pedida
+        print('O painel já está rodando. Abrindo', url)
+        webbrowser.open(url)
+        sys.exit(0)
     preparar_dados()
-    url = 'http://localhost:%d' % PORTA
+    criar_atalho_menu_em_cima()
     print('Gestão de Ensaios M3 rodando em', url)
     print('Planilhas lidas da pasta:', DADOS)
     print('Deixe esta janela aberta enquanto usa o painel.')

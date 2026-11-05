@@ -52,6 +52,26 @@ button,input,select{font:inherit;color:inherit}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(180,189,0,.3)}
 .dot.past{background:var(--earth);box-shadow:0 0 0 3px rgba(182,127,90,.3)}
 #eSubs{display:none}
+/* ---------- versão 2: menu em cima ---------- */
+.lay{display:inline-flex;align-items:center;gap:6px}
+body.topo .sb{position:sticky;top:0;inset:auto;width:auto;height:auto;display:block;padding:0;background:linear-gradient(var(--navy) 0 66px,#f2f4f6 66px);border-bottom:1px solid var(--line);box-shadow:0 6px 16px rgba(9,42,59,.06)}
+body.topo .sb .app{display:none}
+body.topo .sb .logo{position:absolute;left:24px;top:13px;padding:0}body.topo .sb .logo img{width:96px}
+body.topo .sb .foot{position:absolute;right:24px;top:14px;flex-direction:row;align-items:center;border:0;padding:0}
+body.topo .sb .foot #lido{display:none}
+body.topo .sb nav{display:flex;flex-wrap:wrap;align-items:center;gap:4px;padding:10px 24px 0 150px;overflow:visible}
+body.topo .sb nav::before{content:"";order:1;flex-basis:100%;height:0}
+body.topo .sb .grp{order:0;height:56px;margin:0;padding:0 22px;font-size:13px;letter-spacing:1px;color:rgba(255,255,255,.65);border-radius:12px 12px 0 0;cursor:pointer}
+body.topo .sb .grp:after{display:none}
+body.topo .sb .grp:hover{color:#fff}
+body.topo .sb .grp.on{background:#f2f4f6;color:var(--navy)}
+body.topo .nv{order:2;width:auto;white-space:nowrap;color:var(--ink2);padding:8px 14px;border-radius:20px;font-size:13px;margin:6px 0 8px}
+body.topo .nv svg{width:16px;height:16px}
+body.topo .nv:hover{background:#e6eaee;color:var(--navy)}
+body.topo .nv.active{background:var(--navy);color:#fff}body.topo .nv.active:before{display:none}
+body.topo .nv .n{margin-left:6px}
+body.topo #menu[data-ativo=s] .nv[data-g=e],body.topo #menu[data-ativo=e] .nv[data-g=s]{display:none}
+body.topo .wrap{margin-left:0}
 main{max-width:1556px;margin:auto;padding:12px 28px 40px}
 .view{display:none}.view.active{display:block}
 .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
@@ -245,21 +265,21 @@ td{padding:8px;text-align:center;border-bottom:1px solid #e1eaed;font-variant-nu
 <aside class="sb">
   <div class="logo"><img src="assets/gdm_logo_branco.png" alt="GDM"></div>
   <div class="app"><b>Gestão de Ensaios M3</b>Rede de ensaios · M301 a M304</div>
-  <nav id="menu">
-    <div class="grp">Semeadura</div>
-    <button class="nv active" data-v="progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>Progresso</button>
-    <button class="nv" data-v="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Histórico na data</button>
-    <button class="nv" data-v="janelas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Janelas de semeadura</button>
-    <button class="nv" data-v="register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-6-3.5-6-9a6 6 0 0 1 12 0c0 5.5-6 9-6 9z"/><path d="M12 8v5M9.5 10.5h5"/></svg>Registrar semeadura<span class="n" id="npend"></span></button>
-    <div class="grp">Análise de estande</div>
-    <button class="nv" data-v="estande" data-s="geral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Visão geral</button>
-    <button class="nv" data-v="estande" data-s="ajuste"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Ajuste de semeadura</button>
-    <button class="nv" data-v="estande" data-s="rank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21V11M16 21V5M12 21v-6M4 21h16"/></svg>Piores e melhores</button>
-    <button class="nv" data-v="estande" data-s="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Mapa de calor</button>
-    <button class="nv" data-v="estande" data-s="parc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Parcelas</button>
-    <button class="nv" data-v="estande" data-s="arq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 18v-6M9 15l3-3 3 3"/></svg>Arquivos e importação</button>
+  <nav id="menu" data-ativo="s">
+    <div class="grp on" data-g="s">Semeadura</div>
+    <button class="nv active" data-g="s" data-v="progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>Progresso</button>
+    <button class="nv" data-g="s" data-v="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Histórico na data</button>
+    <button class="nv" data-g="s" data-v="janelas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Janelas de semeadura</button>
+    <button class="nv" data-g="s" data-v="register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-6-3.5-6-9a6 6 0 0 1 12 0c0 5.5-6 9-6 9z"/><path d="M12 8v5M9.5 10.5h5"/></svg>Registrar semeadura<span class="n" id="npend"></span></button>
+    <div class="grp" data-g="e">Análise de estande</div>
+    <button class="nv" data-g="e" data-v="estande" data-s="geral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Visão geral</button>
+    <button class="nv" data-g="e" data-v="estande" data-s="ajuste"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Ajuste de semeadura</button>
+    <button class="nv" data-g="e" data-v="estande" data-s="rank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21V11M16 21V5M12 21v-6M4 21h16"/></svg>Piores e melhores</button>
+    <button class="nv" data-g="e" data-v="estande" data-s="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Mapa de calor</button>
+    <button class="nv" data-g="e" data-v="estande" data-s="parc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Parcelas</button>
+    <button class="nv" data-g="e" data-v="estande" data-s="arq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 18v-6M9 15l3-3 3 3"/></svg>Arquivos e importação</button>
   </nav>
-  <div class="foot"><span id="lido"></span><button id="recarregar" title="Ler as planilhas de novo">↻ Atualizar dados</button></div>
+  <div class="foot"><span id="lido"></span><button id="recarregar" title="Ler as planilhas de novo">↻ Atualizar dados</button><button id="layout" title="Trocar a posição do menu">⇄ Menu em cima</button></div>
 </aside>
 <div class="wrap">
 <div class="top">
@@ -462,6 +482,7 @@ const TIT={progress:['Semeadura','Progresso de semeadura','Locais semeados por m
   parc:['Análise de estande','Parcelas','Todas as parcelas avaliadas'],arq:['Análise de estande','Arquivos e importação','Incluir e conferir as planilhas de estande']};
 document.querySelectorAll('.nv').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.nv').forEach(x=>x.classList.toggle('active',x===b));
+  $('menu').dataset.ativo=b.dataset.g;document.querySelectorAll('.grp').forEach(g=>g.classList.toggle('on',g.dataset.g===b.dataset.g));
   const v=b.dataset.v,t=TIT[b.dataset.s||v];
   $('crumb').textContent=t[0];$('titulo').textContent=t[1];$('subtit').textContent=t[2];document.title=t[1]+' · Gestão de Ensaios M3';
   document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='v-'+v));
@@ -471,6 +492,12 @@ document.querySelectorAll('.nv').forEach(b=>b.onclick=()=>{
   window.scrollTo(0,0);
 });
 $('subtit').textContent=TIT.progress[2];
+/* versão do menu: lateral (padrão) ou em cima — escolhida pelo atalho (?menu=topo) ou pelo botão */
+document.querySelectorAll('.grp').forEach(g=>g.onclick=()=>{if(document.body.classList.contains('topo'))document.querySelector(`.nv[data-g="${g.dataset.g}"]`).click()});
+function setMenu(m){document.body.classList.toggle('topo',m==='topo');$('layout').textContent=m==='topo'?'⇄ Menu lateral':'⇄ Menu em cima';
+  try{const u=new URL(location.href);u.searchParams.set('menu',m);history.replaceState(null,'',u)}catch(e){}}
+$('layout').onclick=()=>setMenu(document.body.classList.contains('topo')?'lateral':'topo');
+setMenu(new URLSearchParams(location.search).get('menu')==='topo'?'topo':'lateral');
 
 /* ---------- PROGRESSO ---------- */
 function met(x,cap=''){return`<div class="met"><div class="cap">${cap}</div><div class="frac">${x.done} / ${x.total}</div><div class="bar"><div class="fill" style="width:${pc(x)}%"></div></div><div class="pct">${x.total?pc(x)+'%':'–'}</div></div>`}

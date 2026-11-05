@@ -9,6 +9,13 @@ Painel local de progresso de semeadura, histórico na data e análise de estande
 
 Requer Python com `openpyxl`. O `.bat` instala o `openpyxl` sozinho se faltar.
 
+## Duas versões do menu
+
+- **Gestao de Ensaios M3**: menu na lateral (`iniciar_dashboard.bat`).
+- **Gestao de Ensaios M3 (menu em cima)**: Semeadura e Análise de estande como abas no topo (`iniciar_menu_em_cima.bat`).
+
+Os dois atalhos são criados sozinhos na área de trabalho. O botão **⇄** no menu troca de versão na hora. Se o painel já estiver aberto, o segundo atalho só abre o navegador na versão escolhida.
+
 ## Onde ficam os dados
 
 - `dados/`: planilhas usadas pelo painel. É aqui que o painel grava as semeaduras.
