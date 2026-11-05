@@ -1,0 +1,453 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gestão de Ensaios M3</title>
+<style>
+:root{
+  --teal:#075b6d;--teal2:#00677a;--teal3:#00697d;--tealS:#e3f0f3;--ink:#08243d;--ink2:#40596a;--muted:#6b7f8a;
+  --bg:#eef3f5;--card:#fff;--line:#d4e1e6;--line2:#e6eef1;--track:#d8e2e6;
+  --ok:#16823b;--okS:#e4f4e8;--warn:#a85d00;--warnS:#fff3dc;--bad:#c62828;--badS:#fde8e8;
+  --prev:#c4711a;--other:#a9b8bf;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Arial,sans-serif;font-size:14px}
+button,input,select{font:inherit;color:inherit}
+header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 28px;
+  background:linear-gradient(110deg,#fff 0 56%,var(--teal) 56%);min-height:96px}
+header h1{margin:0;font-size:34px;color:#003c49;letter-spacing:-.5px}
+header p{margin:3px 0 0;color:var(--ink2)}
+.datebox{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);border-radius:12px;padding:9px 12px;color:#fff;display:flex;flex-direction:column;gap:6px;min-width:330px}
+.datebox .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.8px;opacity:.85;display:flex;justify-content:space-between;gap:8px}
+.datebox .ctl{display:flex;gap:6px;align-items:center}
+.datebox input{flex:1;padding:7px 9px;border-radius:8px;border:0;background:#fff;color:var(--ink);font-weight:700;min-width:0}
+.datebox button{border:0;border-radius:8px;padding:7px 10px;background:rgba(255,255,255,.18);color:#fff;font-weight:700;cursor:pointer}
+.datebox button:hover:not(:disabled){background:rgba(255,255,255,.3)}
+.datebox button:disabled{opacity:.35;cursor:default}
+.datebox button.today{background:#fff;color:var(--teal)}
+.badge{display:inline-flex;align-items:center;gap:5px;font-weight:700;text-transform:none;letter-spacing:0;font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%;background:#7fe0a0;box-shadow:0 0 0 3px rgba(127,224,160,.25)}
+.dot.past{background:#ffd27a;box-shadow:0 0 0 3px rgba(255,210,122,.25)}
+nav.tabs{position:sticky;top:0;z-index:20;display:flex;gap:6px;align-items:end;padding:10px 28px 0;background:var(--bg);border-bottom:1px solid var(--line)}
+.tab{border:0;border-radius:9px 9px 0 0;padding:11px 18px;background:#d6e3e8;color:#174c59;font-weight:700;cursor:pointer}
+.tab:hover{background:#cbdde3}
+.tab.active{background:var(--teal2);color:#fff}
+.tab .n{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:9px;background:var(--warnS);color:var(--warn);font-size:12px}
+.tab.active .n{background:rgba(255,255,255,.2);color:#fff}
+.status{margin-left:auto;align-self:center;color:var(--muted);font-size:12px;padding-bottom:8px;display:flex;gap:8px;align-items:center}
+.status button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:4px 9px;cursor:pointer;color:var(--teal);font-weight:700}
+main{max-width:1500px;margin:auto;padding:18px 26px 40px}
+.view{display:none}.view.active{display:block}
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.toolbar select,.toolbar input{padding:8px 10px;border:1px solid #b9ccd4;border-radius:8px;background:#fff}
+.toolbar .grow{flex:1;min-width:200px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(8,36,61,.05)}
+.card h3{margin:0 0 10px;font-size:16px}
+.card .sub{color:var(--muted);font-size:12px;margin:-6px 0 10px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi .l{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+.kpi .v{font-size:28px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+.kpi .v small{font-size:14px;color:var(--muted);font-weight:700}
+.kpi .d{font-size:12px;color:var(--ink2)}
+.kpi.warn .v{color:var(--warn)}
+/* board */
+.board{background:#fff;border:1px solid #cfdee4;border-radius:14px;overflow:hidden;margin-bottom:14px}
+.head,.row,.total{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr .75fr}
+.head{background:var(--teal);color:#fff;font-weight:700}
+.head div,.row>div,.total>div{padding:13px;border-right:1px solid #d4dfe4;display:flex;align-items:center;justify-content:center}
+.head div:last-child,.row>div:last-child,.total>div:last-child{border-right:0}
+.row{min-height:112px;border-bottom:1px solid #d4dfe4}
+.region{justify-content:flex-start!important;gap:12px;font-size:18px;font-weight:750}
+.map{width:96px;height:72px;object-fit:contain}
+.met{width:100%;text-align:center}.cap{display:none;font-size:11px;text-transform:uppercase;letter-spacing:.6px;opacity:.7;margin-bottom:2px}
+.frac{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
+.bar{height:12px;background:var(--track);border-radius:9px;overflow:hidden;margin:7px 0}
+.fill{height:100%;background:linear-gradient(90deg,#1298ae,#00596b);border-radius:9px}
+.pct{font-weight:800;color:#00687d}
+.ring{--p:0;width:76px;height:76px;border-radius:50%;background:conic-gradient(var(--teal3) calc(var(--p)*1%),var(--track) 0);display:grid;place-items:center;position:relative}
+.ring:before{content:"";width:54px;height:54px;background:#fff;border-radius:50%}
+.ring span{position:absolute;font-weight:800;z-index:2;color:var(--ink)}
+.total{min-height:104px;background:#064f60;color:#fff}
+.total .ring{background:conic-gradient(#7fd3e1 calc(var(--p)*1%),rgba(255,255,255,.18) 0)}
+.total .ring:before{background:#064f60}.total .ring span{color:#fff}
+.total .pct{color:#fff}.total .bar{background:rgba(255,255,255,.18)}.total .fill{background:#7fd3e1}
+.adv{display:flex;align-items:center;gap:10px}
+.adv strong{font-size:18px}
+/* listas */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.list{display:flex;flex-direction:column}
+.li{display:grid;grid-template-columns:86px 1fr auto;gap:10px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--line2)}
+.li:last-child{border-bottom:0}
+.li .dt{font-weight:800;font-variant-numeric:tabular-nums;color:var(--teal)}
+.li .nm{font-weight:650}
+.li .meta{font-size:12px;color:var(--muted)}
+.empty{color:var(--muted);padding:12px 2px}
+.chip{display:inline-block;padding:2px 8px;border-radius:10px;font-size:12px;font-weight:700;white-space:nowrap}
+.chip.ok{background:var(--okS);color:var(--ok)}
+.chip.warn{background:var(--warnS);color:var(--warn)}
+.chip.bad{background:var(--badS);color:var(--bad)}
+.chip.neu{background:#edf2f4;color:var(--ink2)}
+.chip.ab{background:#e3f0f3;color:#075b6d}.chip.in{background:#eef0ff;color:#3b47a8}.chip.fe{background:#f6e9f3;color:#8a2d6e}
+/* histórico */
+.rule{background:#fff;border:1px solid #cfdee4;border-left:4px solid var(--teal2);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+.season{background:#fff;border:1px solid #cfdee4;border-radius:12px;padding:14px}
+.season h3{margin:0 0 6px;font-size:16px;display:flex;justify-content:space-between;align-items:center}
+.season.now{border:2px solid #078197;box-shadow:0 2px 10px rgba(7,129,151,.12)}
+.maps{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.maps img{width:100%;height:64px;object-fit:contain}
+.lab{display:flex;justify-content:space-between;font-weight:650;margin-top:8px;font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse}
+th{background:var(--teal);color:#fff;padding:9px 8px;font-weight:700;text-align:center}
+td{padding:8px;text-align:center;border-bottom:1px solid #e1eaed;font-variant-numeric:tabular-nums}
+.tbl td:first-child{text-align:left;font-weight:700}
+.tbl tr.now td{background:#f2f9fa}
+.pos{color:var(--ok);font-weight:800}.neg{color:var(--bad);font-weight:800}.neutral{color:#596b75;font-weight:700}
+/* gráfico */
+.chart{position:relative}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink2);margin-bottom:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{display:inline-block;width:18px;height:3px;border-radius:2px}
+.tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 18px rgba(8,36,61,.15);padding:8px 10px;font-size:12px;min-width:170px;display:none;z-index:5}
+.tip b{display:block;margin-bottom:4px}
+.tip .r{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+.tip .r.cur{font-weight:800;color:var(--teal)}
+/* registrar */
+.reg td{text-align:left;vertical-align:middle}
+.reg td.c{text-align:center}
+.reg th{text-align:left}
+.reg tr:hover td{background:#f7fbfc}
+.reg .loc{font-weight:700}
+.reg .resp{font-size:12px;color:var(--muted)}
+.act{display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.act input[type=date]{padding:6px 8px;border:1px solid #b9ccd4;border-radius:7px}
+.btn{border:1px solid #b9ccd4;background:#fff;border-radius:7px;padding:6px 11px;font-weight:700;cursor:pointer;color:var(--teal)}
+.btn:hover{background:var(--tealS)}
+.btn.pri{background:var(--teal2);border-color:var(--teal2);color:#fff}
+.btn.pri:hover{background:var(--teal)}
+.btn.dng{color:var(--bad)}
+.btn.dng.sure{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn:disabled{opacity:.5;cursor:wait}
+.note{font-size:12px;color:var(--muted)}
+.toast{position:fixed;right:22px;bottom:22px;z-index:50;background:#0d3b47;color:#fff;padding:12px 16px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:420px;opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:none}
+.toast.err{background:var(--bad)}
+.alert{background:var(--badS);color:var(--bad);border:1px solid #f3c2c2;border-radius:10px;padding:12px 14px;margin-bottom:12px;display:none}
+iframe#estande{width:100%;height:calc(100vh - 170px);min-height:720px;border:0;border-radius:12px;background:#fff}
+@media(max-width:1000px){
+  header{flex-direction:column;align-items:stretch;background:var(--teal)}
+  header h1,header p{color:#fff}
+  .datebox{min-width:0}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .two,.cards{grid-template-columns:1fr}
+  .head,.row,.total{grid-template-columns:1fr}.head{display:none}.cap{display:block}
+  .row>div,.total>div{border-right:0;padding:8px 13px}.tab{white-space:nowrap}
+  .status{display:none}
+  main{padding:14px}
+  nav.tabs{padding:8px 14px 0;overflow-x:auto}
+  .reg{display:block;overflow-x:auto}
+}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Gestão de Ensaios M3</h1>
+    <p>Progresso de semeadura, histórico na data e análise de estande</p>
+  </div>
+  <div class="datebox">
+    <div class="lbl"><span>Situação em</span><span id="modo" class="badge"></span></div>
+    <div class="ctl">
+      <button id="ant" title="Dia anterior">◀</button>
+      <input type="date" id="dt" aria-label="Data de referência">
+      <button id="prox" title="Próximo dia">▶</button>
+      <button id="hoje" class="today" title="Voltar para hoje">Hoje</button>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-v="progress">Progresso de semeadura</button>
+  <button class="tab" data-v="history">Histórico na data</button>
+  <button class="tab" data-v="register">Registrar semeadura<span class="n" id="npend"></span></button>
+  <button class="tab" data-v="estande">Análise de estande</button>
+  <div class="status"><span id="lido"></span><button id="recarregar" title="Ler a planilha de novo">↻ Atualizar</button></div>
+</nav>
+
+<main>
+  <div class="alert" id="alerta"></div>
+
+  <!-- PROGRESSO -->
+  <section class="view active" id="v-progress">
+    <div class="toolbar">
+      <b>Visualização:</b>
+      <select id="f">
+        <option value="ALL">Pesquisa e Desenvolvimento</option>
+        <option value="PESQ">Somente Pesquisa</option>
+        <option value="DES">Somente Desenvolvimento</option>
+      </select>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div class="board">
+      <div class="head"><div>Microrregião</div><div>Pesquisa</div><div>Desenvolvimento</div><div>Total</div><div>Avanço</div></div>
+      <div id="rows"></div>
+      <div id="tot"></div>
+    </div>
+    <div class="two">
+      <div class="card"><h3>Últimas semeaduras</h3><div class="sub" id="ultSub"></div><div class="list" id="ult"></div></div>
+      <div class="card"><h3>Faltam semear</h3><div class="sub" id="pendSub"></div><div class="list" id="pend"></div></div>
+    </div>
+  </section>
+
+  <!-- HISTÓRICO -->
+  <section class="view" id="v-history">
+    <div class="rule" id="regra"></div>
+    <div id="cards" class="cards"></div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="tbl"><thead><tr><th style="text-align:left">Safra</th><th>M301 + M302</th><th>M303</th><th>M304</th><th>Total M3</th><th>Diferença vs. atual</th></tr></thead><tbody id="tb"></tbody></table>
+    </div>
+    <div class="card">
+      <h3>Evolução da semeadura acumulada — Desenvolvimento (Total M3)</h3>
+      <div class="sub">Percentual de locais semeados ao longo da janela. Passe o mouse sobre o gráfico para comparar as safras no mesmo dia.</div>
+      <div class="legend" id="leg"></div>
+      <div class="chart" id="chart"><div class="tip" id="tip"></div></div>
+    </div>
+  </section>
+
+  <!-- REGISTRAR -->
+  <section class="view" id="v-register">
+    <div class="toolbar">
+      <input class="grow" id="busca" placeholder="Buscar localidade ou responsável…">
+      <select id="rg"><option value="">Todas as micros</option><option>M301 + M302</option><option>M303</option><option>M304</option></select>
+      <select id="rc"><option value="">Pesquisa e Desenvolvimento</option><option value="PESQ">Somente Pesquisa</option><option value="DES">Somente Desenvolvimento</option></select>
+      <select id="rs"><option value="PEND">Pendentes</option><option value="OK">Semeados</option><option value="">Todos</option></select>
+    </div>
+    <p class="note" id="regNota"></p>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="reg"><thead><tr><th>Localidade</th><th>Micro</th><th>Condução</th><th>Previsto</th><th>Situação</th><th style="text-align:right">Semeadura</th></tr></thead><tbody id="regBody"></tbody></table>
+    </div>
+  </section>
+
+  <!-- ESTANDE -->
+  <section class="view" id="v-estande"><iframe id="estande" title="Análise de estande"></iframe></section>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const G=['M301 + M302','M303','M304'];
+const IMG={'M301 + M302':'assets/m301_302.png','M303':'assets/m303.png','M304':'assets/m304.png'};
+const $=id=>document.getElementById(id);
+let D=null, SEL=null; // SEL = data escolhida (ISO) ou null = hoje
+let editando=null, confirmar=null;
+
+/* ---------- datas (sempre em ISO aaaa-mm-dd, sem fuso) ---------- */
+const pad=n=>String(n).padStart(2,'0');
+const isoDe=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const hoje=()=>isoDe(new Date());
+const partes=s=>s.split('-').map(Number);
+const somaDias=(s,n)=>{const[y,m,d]=partes(s);return isoDe(new Date(y,m-1,d+n))};
+const dif=(a,b)=>{const[y1,m1,d1]=partes(a),[y2,m2,d2]=partes(b);return Math.round((Date.UTC(y1,m1-1,d1)-Date.UTC(y2,m2-1,d2))/864e5)};
+const fmt=s=>{if(!s)return'';const[y,m,d]=partes(s);return`${pad(d)}/${pad(m)}/${y}`};
+const fmtc=s=>{if(!s)return'';const[,m,d]=partes(s);return`${pad(d)}/${pad(m)}`};
+const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const ref=()=>SEL||hoje();
+function mudaAno(s,anos){const[y,m,d]=partes(s);const dt=new Date(y+anos,m-1,d);if(dt.getMonth()!==m-1)dt.setDate(0);return isoDe(dt)}
+const anoSafra=sf=>2000+parseInt(String(sf).split('/')[0],10);
+// mesma data (dia/mês) dentro da safra sf
+const naSafra=(sf,s)=>mudaAno(s,anoSafra(sf)-D.inicioSafra);
+// previsto normalizado para o ano da safra atual (a planilha tem anos digitados errados)
+function previsto(x){if(!x.prev)return null;const[,m,d]=partes(x.prev);const y=m>=7?D.inicioSafra:D.inicioSafra+1;return`${y}-${pad(m)}-${pad(d)}`}
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pc=x=>x.total?Math.round(x.done/x.total*100):0;
+const semeado=(x,r)=>!!x.real&&x.real<=r;
+function janChip(j){if(!j)return'';const c=j.startsWith('Abert')?'ab':j.startsWith('Inter')?'in':'fe';return`<span class="chip ${c}">${esc(j)}</span>`}
+
+/* ---------- cabeçalho de data ---------- */
+function syncData(){
+  const h=hoje(); if(SEL&&SEL>=h)SEL=null;
+  $('dt').max=h; $('dt').value=ref(); $('prox').disabled=!SEL; $('hoje').style.display=SEL?'':'none';
+  $('modo').innerHTML=SEL?'<i class="dot past"></i>Data passada':'<i class="dot"></i>Hoje · atualiza sozinho';
+}
+function setData(s){SEL=(!s||s>=hoje())?null:s;syncData();renderTudo()}
+$('dt').onchange=e=>setData(e.target.value);
+$('ant').onclick=()=>setData(somaDias(ref(),-1));
+$('prox').onclick=()=>setData(somaDias(ref(),1));
+$('hoje').onclick=()=>setData(null);
+
+/* ---------- abas ---------- */
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='v-'+b.dataset.v));
+  if(b.dataset.v==='estande'&&!$('estande').src)$('estande').src='estande.html';
+  if(b.dataset.v==='history')desenhaGrafico();
+});
+
+/* ---------- PROGRESSO ---------- */
+function met(x,cap=''){return`<div class="met"><div class="cap">${cap}</div><div class="frac">${x.done} / ${x.total}</div><div class="bar"><div class="fill" style="width:${pc(x)}%"></div></div><div class="pct">${x.total?pc(x)+'%':'–'}</div></div>`}
+function ring(p){return`<div class="adv"><div class="ring" style="--p:${p}"><span>${p}%</span></div><strong>${p}%</strong></div>`}
+function conta(z,r,c=''){const q=z.filter(x=>!c||x.c===c);return{done:q.filter(x=>semeado(x,r)).length,total:q.length}}
+function renderProgresso(){
+  const r=ref(), f=$('f').value, b=f==='ALL'?D.cur:D.cur.filter(x=>x.c===f);
+  $('rows').innerHTML=G.map(g=>{const z=b.filter(x=>x.g===g),t=conta(z,r);
+    return`<div class="row"><div class="region"><img class="map" src="${IMG[g]}" alt="">${g}</div><div>${met(conta(z,r,'PESQ'),'Pesquisa')}</div><div>${met(conta(z,r,'DES'),'Desenvolvimento')}</div><div>${met(t,'Total')}</div><div>${ring(pc(t))}</div></div>`}).join('');
+  const t=conta(b,r);
+  $('tot').innerHTML=`<div class="total"><div class="region">TOTAL M3</div><div>${met(conta(b,r,'PESQ'),'Pesquisa')}</div><div>${met(conta(b,r,'DES'),'Desenvolvimento')}</div><div>${met(t,'Total')}</div><div>${ring(pc(t))}</div></div>`;
+  const noDia=b.filter(x=>x.real===r).length;
+  const semana=b.filter(x=>x.real&&x.real<=r&&x.real>somaDias(r,-7)).length;
+  const pend=b.filter(x=>!semeado(x,r));
+  const vencidos=pend.filter(x=>{const p=previsto(x);return p&&p<r}).length;
+  $('kpis').innerHTML=`
+    <div class="kpi"><div class="l">Semeados até ${fmtc(r)}</div><div class="v">${t.done} <small>/ ${t.total}</small></div><div class="d">${pc(t)}% dos locais</div></div>
+    <div class="kpi"><div class="l">Semeados em ${fmtc(r)}</div><div class="v">${noDia}</div><div class="d">${SEL?'no dia selecionado':'hoje'}</div></div>
+    <div class="kpi"><div class="l">Últimos 7 dias</div><div class="v">${semana}</div><div class="d">${fmtc(somaDias(r,-6))} a ${fmtc(r)}</div></div>
+    <div class="kpi ${vencidos?'warn':''}"><div class="l">Previsão vencida</div><div class="v">${vencidos} <small>/ ${pend.length} pendentes</small></div><div class="d">previsto antes de ${fmtc(r)} e ainda sem semeadura</div></div>`;
+  const ult=b.filter(x=>semeado(x,r)).sort((a,c)=>c.real.localeCompare(a.real)||a.loc.localeCompare(c.loc)).slice(0,8);
+  $('ultSub').textContent=`Até ${fmt(r)}`;
+  $('ult').innerHTML=ult.length?ult.map(x=>`<div class="li"><span class="dt">${fmt(x.real)}</span><span><span class="nm">${esc(x.loc)}</span><div class="meta">M${esc(x.micro)} · ${esc(x.c)} · ${esc(x.resp)}</div></span>${janChip(x.janReal)}</div>`).join(''):'<div class="empty">Nenhuma semeadura até esta data.</div>';
+  const ps=pend.map(x=>({x,p:previsto(x)})).sort((a,c)=>(a.p||'9').localeCompare(c.p||'9'));
+  $('pendSub').textContent=pend.length?`${pend.length} locais ordenados pela data prevista`:'';
+  $('pend').innerHTML=ps.length?ps.map(({x,p})=>{const d=p?dif(r,p):null;
+    const chip=d===null?'<span class="chip neu">sem previsão</span>':d>0?`<span class="chip warn">vencido há ${d} dia${d>1?'s':''}</span>`:d===0?'<span class="chip warn">previsto para hoje</span>':`<span class="chip neu">em ${-d} dia${-d>1?'s':''}</span>`;
+    return`<div class="li"><span class="dt">${p?fmt(p):'—'}</span><span><span class="nm">${esc(x.loc)}</span><div class="meta">M${esc(x.micro)} · ${esc(x.c)} · ${esc(x.resp)}</div></span>${chip}</div>`}).join(''):'<div class="empty">Todos os locais desta visualização estão semeados. 🎉</div>';
+}
+
+/* ---------- HISTÓRICO ---------- */
+function temporadas(r){
+  const des=D.cur.filter(x=>x.c==='DES');
+  const ss=[{sf:D.safra,current:true,groups:Object.fromEntries(G.map(g=>[g,conta(des.filter(x=>x.g===g),r)]))}];
+  const sfs=[...new Set(D.hist.map(x=>x.sf))].filter(s=>s!==D.safra).sort().reverse();
+  for(const sf of sfs){const lim=naSafra(sf,r),z=D.hist.filter(x=>x.sf===sf);
+    ss.push({sf,current:false,lim,groups:Object.fromEntries(G.map(g=>{const q=z.filter(x=>x.g===g);return[g,{done:q.filter(x=>x.dt<=lim).length,total:q.length}]}))})}
+  return ss;
+}
+function soma(s){const a=Object.values(s.groups);return{done:a.reduce((x,y)=>x+y.done,0),total:a.reduce((x,y)=>x+y.total,0)}}
+function renderHistorico(){
+  const r=ref(), ss=temporadas(r);
+  $('regra').innerHTML=`<b>Histórico em ${fmt(r)}${SEL?'':' (hoje)'}:</b> safra atual somente Desenvolvimento. Safras anteriores acumuladas até o mesmo dia e mês (${fmtc(r)}).`;
+  $('cards').innerHTML=ss.map(s=>{const t=soma(s);return`<div class="season ${s.current?'now':''}"><h3>Safra ${s.sf}${s.current?' <span class="chip ab">atual · DES</span>':''}</h3><div class="maps">${G.map(g=>`<img src="${IMG[g]}" alt="">`).join('')}</div>${G.map(g=>{const x=s.groups[g];return`<div class="lab"><span>${g}</span><span>${x.done}/${x.total} (${pc(x)}%)</span></div><div class="bar"><div class="fill" style="width:${pc(x)}%"></div></div>`}).join('')}<div class="lab"><b>Total M3</b><b>${t.done}/${t.total} (${pc(t)}%)</b></div></div>`}).join('');
+  const atual=pc(soma(ss[0]));
+  $('tb').innerHTML=ss.map(s=>{const t=soma(s),d=pc(t)-atual,cl=s.current?'neutral':d>0?'pos':d<0?'neg':'neutral',tx=s.current?'Atual':(d>0?'+':'')+d+' p.p.';
+    return`<tr class="${s.current?'now':''}"><td>${s.sf}${s.current?' (DES)':''}</td>${G.map(g=>{const x=s.groups[g];return`<td>${x.done}/${x.total} (${pc(x)}%)</td>`}).join('')}<td><b>${t.done}/${t.total} (${pc(t)}%)</b></td><td class="${cl}">${tx}</td></tr>`}).join('');
+  desenhaGrafico();
+}
+
+/* gráfico: % acumulado por dia da safra (dia 0 = 1º de agosto) */
+function diaSafra(sf,s){return dif(s,`${anoSafra(sf)}-08-01`)}
+function dataDoDia(n){return somaDias(`${D.inicioSafra}-08-01`,n)}
+function desenhaGrafico(){
+  const box=$('chart'); if(!D||!box.offsetWidth)return;
+  const r=ref();
+  const series=[];
+  const des=D.cur.filter(x=>x.c==='DES');
+  series.push({sf:D.safra,cur:true,dias:des.filter(x=>x.real).map(x=>diaSafra(D.safra,x.real)),total:des.length,fim:diaSafra(D.safra,r)});
+  const sfs=[...new Set(D.hist.map(x=>x.sf))].filter(s=>s!==D.safra).sort().reverse();
+  sfs.forEach((sf,i)=>{const z=D.hist.filter(x=>x.sf===sf);series.push({sf,prev:i===0,dias:z.map(x=>diaSafra(sf,x.dt)),total:z.length})});
+  const todos=series.flatMap(s=>s.dias).concat([series[0].fim]);
+  let x0=Math.min(...todos)-3, x1=Math.max(...todos)+3;
+  x0=diaSafra(D.safra,dataDoDia(x0).slice(0,8)+'01');
+  const W=box.offsetWidth,H=300,m={l:42,r:14,t:12,b:30},iw=W-m.l-m.r,ih=H-m.t-m.b;
+  const X=d=>m.l+(d-x0)/(x1-x0)*iw, Y=p=>m.t+ih-p/100*ih;
+  const acum=(s,d)=>s.total?s.dias.filter(v=>v<=d).length/s.total*100:0;
+  const caminho=(s,ate)=>{let p='';for(let d=x0;d<=ate;d++){const y=Y(acum(s,d));p+=(p?'L':'M')+X(d).toFixed(1)+','+y.toFixed(1)}return p};
+  let g='';
+  [0,25,50,75,100].forEach(p=>g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${Y(p)}" y2="${Y(p)}" stroke="#e6eef1"/><text x="${m.l-8}" y="${Y(p)+4}" text-anchor="end" font-size="11" fill="#6b7f8a">${p}%</text>`);
+  for(let d=x0;d<=x1;d++){const s=dataDoDia(d),[,mm,dd]=partes(s);if(dd===1||dd===15)g+=`<line x1="${X(d)}" x2="${X(d)}" y1="${m.t+ih}" y2="${m.t+ih+4}" stroke="#b9ccd4"/><text x="${X(d)}" y="${H-8}" text-anchor="middle" font-size="11" fill="#6b7f8a">${pad(dd)}/${MES[mm-1]}</text>`}
+  const ordem=[...series.filter(s=>!s.cur&&!s.prev),...series.filter(s=>s.prev),series[0]];
+  ordem.forEach(s=>{const cor=s.cur?'#00697d':s.prev?'#c4711a':'#a9b8bf',w=s.cur?3:s.prev?2:1.5;
+    g+=`<path d="${caminho(s,s.cur?Math.min(s.fim,x1):x1)}" fill="none" stroke="${cor}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round" ${s.cur||s.prev?'':'opacity=".8"'}/>`});
+  const xr=X(Math.min(series[0].fim,x1));
+  g+=`<line x1="${xr}" x2="${xr}" y1="${m.t}" y2="${m.t+ih}" stroke="#08243d" stroke-dasharray="4 4" opacity=".55"/><text x="${xr+5}" y="${m.t+11}" font-size="11" font-weight="700" fill="#08243d">${fmtc(r)}</text>`;
+  const ca=acum(series[0],series[0].fim);
+  g+=`<circle cx="${xr}" cy="${Y(ca)}" r="5" fill="#00697d" stroke="#fff" stroke-width="2"/>`;
+  g+=`<line id="cx" y1="${m.t}" y2="${m.t+ih}" stroke="#40596a" opacity="0" /><g id="dots"></g><rect id="hit" x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent"/>`;
+  box.querySelector('svg')?.remove();
+  box.insertAdjacentHTML('afterbegin',`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolução da semeadura acumulada por safra">${g}</svg>`);
+  const prev=series.find(s=>s.prev), outras=series.filter(s=>!s.cur&&!s.prev);
+  $('leg').innerHTML=`<span><i style="background:#00697d;height:4px"></i>Safra ${D.safra} (atual)</span>`+(prev?`<span><i style="background:#c4711a"></i>Safra ${prev.sf}</span>`:'')+(outras.length?`<span><i style="background:#a9b8bf"></i>Safras ${outras[outras.length-1].sf} a ${outras[0].sf}</span>`:'');
+  const svg=box.querySelector('svg'),tip=$('tip'),cx=svg.querySelector('#cx'),dots=svg.querySelector('#dots');
+  const hit=svg.querySelector('#hit');
+  hit.onmousemove=e=>{
+    const bb=svg.getBoundingClientRect(),px=(e.clientX-bb.left)*W/bb.width;
+    const d=Math.round(x0+(px-m.l)/iw*(x1-x0)); if(d<x0||d>x1)return;
+    cx.setAttribute('x1',X(d));cx.setAttribute('x2',X(d));cx.setAttribute('opacity','.4');
+    const vis=series.filter(s=>!s.cur||d<=s.fim).map(s=>({s,p:acum(s,d)})).sort((a,b)=>b.p-a.p);
+    dots.innerHTML=vis.filter(v=>v.s.cur||v.s.prev).map(v=>`<circle cx="${X(d)}" cy="${Y(v.p)}" r="4" fill="${v.s.cur?'#00697d':'#c4711a'}" stroke="#fff" stroke-width="2"/>`).join('');
+    tip.innerHTML=`<b>${fmtc(dataDoDia(d))}</b>`+vis.map(v=>`<div class="r ${v.s.cur?'cur':''}"><span>${v.s.sf}${v.s.cur?' (atual)':''}</span><span>${Math.round(v.p)}%</span></div>`).join('');
+    tip.style.display='block';
+    const left=(X(d)*bb.width/W)+14; tip.style.left=(left+tip.offsetWidth>bb.width?left-tip.offsetWidth-28:left)+'px'; tip.style.top='10px';
+  };
+  hit.onmouseleave=()=>{tip.style.display='none';cx.setAttribute('opacity','0');dots.innerHTML=''};
+}
+let rz;window.addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(desenhaGrafico,150)});
+
+/* ---------- REGISTRAR ---------- */
+function renderRegistro(){
+  const h=hoje(), q=$('busca').value.trim().toLowerCase(), g=$('rg').value, c=$('rc').value, st=$('rs').value;
+  const pend=D.cur.filter(x=>!x.real).length;
+  $('npend').textContent=pend||''; $('npend').style.display=pend?'':'none';
+  $('regNota').innerHTML=`Os registros são gravados direto na planilha <b>${esc(D.arquivo)}</b> (coluna PLANTIO REAL). Uma cópia de segurança é feita antes de cada gravação.`+(SEL?` Esta aba sempre mostra a situação atual, independente da data escolhida no topo.`:'');
+  let z=D.cur.filter(x=>(!g||x.g===g)&&(!c||x.c===c)&&(!st||(st==='OK')===!!x.real)&&(!q||(x.loc+' '+x.resp).toLowerCase().includes(q)));
+  z.sort((a,b)=>st==='OK'?(b.real||'').localeCompare(a.real||''):(previsto(a)||'9').localeCompare(previsto(b)||'9')||a.loc.localeCompare(b.loc));
+  if(!z.length){$('regBody').innerHTML=`<tr><td colspan="6" class="empty" style="text-align:center;padding:24px">${st==='PEND'&&!q?'Nenhum local pendente com estes filtros. 🎉':'Nenhum local encontrado.'}</td></tr>`;return}
+  $('regBody').innerHTML=z.map(x=>{
+    const p=previsto(x), d=p?dif(h,p):null, k=x.row;
+    let sit=x.real?`<span class="chip ok">Semeado</span>`:d!==null&&d>0?`<span class="chip warn">Atrasado ${d}d</span>`:`<span class="chip neu">Pendente</span>`;
+    let acao;
+    if(x.real&&editando!==k){
+      acao=`<b>${fmt(x.real)}</b> ${janChip(x.janReal)} <button class="btn" data-ed="${k}">Alterar</button> <button class="btn dng ${confirmar===k?'sure':''}" data-del="${k}">${confirmar===k?'Confirmar remoção':'Desfazer'}</button>`;
+    }else{
+      const v=x.real||h;
+      acao=`<input type="date" id="d${k}" value="${v}" max="${h}"> <button class="btn pri" data-sv="${k}">${x.real?'Salvar':'Registrar'}</button>`+(x.real?` <button class="btn" data-cc="${k}">Cancelar</button>`:'');
+    }
+    return`<tr><td><div class="loc">${esc(x.loc)}</div><div class="resp">${esc(x.resp)} · ${esc(x.tipo)}</div></td><td>M${esc(x.micro)}</td><td>${esc(x.c)}</td><td>${p?fmt(p):'—'}<div class="resp">${esc(x.janPrev)}</div></td><td>${sit}</td><td><div class="act">${acao}</div></td></tr>`}).join('');
+}
+['busca','rg','rc','rs'].forEach(id=>$(id).addEventListener('input',()=>{editando=confirmar=null;renderRegistro()}));
+$('regBody').addEventListener('click',async e=>{
+  const b=e.target.closest('button'); if(!b)return;
+  const pega=k=>D.cur.find(x=>x.row===+k);
+  if(b.dataset.ed){editando=+b.dataset.ed;confirmar=null;renderRegistro();return}
+  if(b.dataset.cc){editando=null;renderRegistro();return}
+  if(b.dataset.del){const k=+b.dataset.del;
+    if(confirmar!==k){confirmar=k;renderRegistro();setTimeout(()=>{if(confirmar===k){confirmar=null;renderRegistro()}},5000);return}
+    confirmar=null; return salvar(pega(k),null,b)}
+  if(b.dataset.sv){const k=b.dataset.sv,v=$('d'+k).value;
+    if(!v)return toast('Escolha a data da semeadura.',true);
+    if(v>hoje())return toast('A data não pode ser futura.',true);
+    return salvar(pega(k),v,b)}
+});
+async function salvar(x,data,btn){
+  btn.disabled=true;
+  try{
+    const r=await fetch('/api/m3/semeadura',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({row:x.row,loc:x.loc,data})});
+    const j=await r.json(); if(!r.ok)throw new Error(j.erro||'Erro ao gravar');
+    D=j; editando=null; renderTudo();
+    toast(data?`${x.loc}: semeadura registrada em ${fmt(data)}.`:`${x.loc}: registro de semeadura removido.`);
+  }catch(err){toast(err.message,true);btn.disabled=false}
+}
+let tt;function toast(msg,err){const t=$('toast');t.textContent=msg;t.className='toast show'+(err?' err':'');clearTimeout(tt);tt=setTimeout(()=>t.className='toast',err?6000:3500)}
+
+/* ---------- carga e atualização automática ---------- */
+function renderTudo(){if(!D)return;syncData();renderProgresso();renderHistorico();renderRegistro();$('lido').textContent=`${D.arquivo} · lida às ${D.lidoEm}`}
+async function carregar(silencioso){
+  try{
+    const r=await fetch('/api/m3/data?ts='+Date.now()),j=await r.json();
+    if(!r.ok)throw new Error(j.erro||'Erro ao ler as planilhas');
+    D=j; $('alerta').style.display='none'; renderTudo();
+    if(!silencioso)toast('Planilha lida novamente.');
+  }catch(e){$('alerta').textContent='Não foi possível ler os dados: '+e.message;$('alerta').style.display='block'}
+}
+$('f').onchange=renderProgresso;
+$('recarregar').onclick=()=>carregar(false);
+// a cada minuto: se a data virou (meia-noite) e está no modo "hoje", atualiza a tela
+let ultimoDia=hoje();
+setInterval(()=>{if(hoje()!==ultimoDia){ultimoDia=hoje();renderTudo()}},60000);
+// a cada 5 minutos relê a planilha (pega mudanças feitas no Excel), sem atrapalhar edição em andamento
+setInterval(()=>{if(editando===null&&confirmar===null)carregar(true)},300000);
+window.addEventListener('focus',()=>{if(D&&editando===null)carregar(true)});
+syncData(); carregar(true);
+</script>
+</body>
+</html>
