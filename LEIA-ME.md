@@ -40,7 +40,13 @@ O token fica salvo em `token_github.txt`, só lê este repositório e não vai p
 - **Histórico na data:** safra atual (DES) comparada às anteriores no mesmo dia/mês, com gráfico da evolução acumulada.
 - **Janelas de semeadura:** % de locais em Abertura, Intermediário e Fechamento, com filtro por área (Desenvolvimento/Pesquisa) e região, na data escolhida no topo.
 - **Registrar semeadura:** registrar, corrigir ou desfazer a data de semeadura de cada local.
-- **Análise de estande:** versão anterior, sem alterações (será refeita).
+- **Análise de estande:** filtros por região, localidade, tipo, material e faixa de diferença de população, divididos em:
+  - *Visão geral:* quantas parcelas estão na faixa escolhida, situação (ruim ≤ −15%, atenção, adequado), histograma, localidades comparadas com a testemunha e qualidade da semente (germinação/vigor) × estande;
+  - *Ajuste de semeadura:* cultivares com −10% ou pior em várias localidades e o aumento de sementes sugerido, por região (exporta CSV);
+  - *Piores e melhores cultivares:* ranking pela diferença média, incluindo a comparação com a testemunha do mesmo local;
+  - *Mapa de calor:* cultivar × localidade;
+  - *Parcelas:* tabela completa, ordenável, com exportação;
+  - *Arquivos e importação:* inclui planilhas novas (arrastar e soltar), mostra o que foi lido e os nomes unificados.
 
 Sem data escolhida, o painel mostra sempre o dia de hoje. Ele relê a planilha a cada 5 minutos e vira o dia sozinho à meia-noite.
 
@@ -55,3 +61,11 @@ A planilha precisa estar **fechada no Excel** na hora de registrar uma semeadura
 | Fechamento | a partir de 21/10 | a partir de 05/11 | a partir de 06/11 |
 
 A regra está em `planilha.py` (função `janela`) e também na fórmula da coluna JANELA REAL da planilha.
+
+## Planilhas de estande
+
+Cada região pode ter o seu modelo. O painel acha sozinho as colunas de **material** e **diferença (%)**: "Diferença do real" (M301), "Dif" em fração (M303, aba Planilha1) ou "POP %" (M304). Se a diferença não estiver na planilha, ele calcula a partir da população recomendada e do estande.
+
+A localidade sai do nome do arquivo (ex.: `Estande Inicial - Rio Verde_2.xlsx`) ou da coluna "Ensaio". Se você mandar duas planilhas da mesma localidade, vale a mais recente.
+
+Os nomes dos materiais são unificados: maiúsculas/minúsculas, acentos, espaços, marca (BRASMAX, STINE, DAGMA/DAG), tecnologia (I2X, IPRO, CE) e "Pop 1/Pop 3" não diferenciam o material. Assim, `DAG 6525 I2X`, `6525 I2X` e `DAGMA 6525 I2X POP 3` contam como o mesmo, e `SBQ 268809` = `SBQ268809`. Para casos que escaparem, use `dados/apelidos_materiais.csv` (`grafia;nome padrão`).

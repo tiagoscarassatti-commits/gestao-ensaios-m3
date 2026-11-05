@@ -153,7 +153,60 @@ td{padding:8px;text-align:center;border-bottom:1px solid #e1eaed;font-variant-nu
 .toast.show{opacity:1;transform:none}
 .toast.err{background:var(--bad)}
 .alert{background:var(--badS);color:var(--bad);border:1px solid #f3c2c2;border-radius:10px;padding:12px 14px;margin-bottom:12px;display:none}
-iframe#estande{width:100%;height:calc(100vh - 170px);min-height:720px;border:0;border-radius:12px;background:#fff}
+/* estande */
+.efilt{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) minmax(280px,1.6fr);gap:10px;align-items:end;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.efilt label{display:flex;flex-direction:column;gap:4px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700}
+.efilt select,.efilt input[type=text],.efilt input[type=number]{padding:8px 9px;border:1px solid #b9ccd4;border-radius:8px;background:#fff;text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink);font-weight:400;min-width:0}
+.faixa .lin{display:flex;gap:6px;align-items:center}
+.faixa input[type=number]{width:76px}
+.faixa .btn{padding:6px 9px;font-size:12px}
+.dual{position:relative;height:22px;margin-top:2px}
+.dual input[type=range]{position:absolute;left:0;right:0;width:100%;top:0;margin:0;pointer-events:none;background:none;-webkit-appearance:none;appearance:none;height:22px}
+.dual input[type=range]::-webkit-slider-thumb{pointer-events:auto;-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--teal2);cursor:pointer;position:relative;z-index:2}
+.dual input[type=range]::-moz-range-thumb{pointer-events:auto;width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--teal2);cursor:pointer}
+.dual .trk{position:absolute;left:0;right:0;top:9px;height:4px;border-radius:3px;background:var(--track)}
+.dual .sel{position:absolute;top:9px;height:4px;border-radius:3px;background:var(--teal2)}
+.subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.subtabs button{border:1px solid var(--line);background:#fff;border-radius:20px;padding:7px 14px;font-weight:700;color:var(--ink2);cursor:pointer}
+.subtabs button.on{background:var(--teal2);border-color:var(--teal2);color:#fff}
+.esub{display:none}.esub.on{display:block}
+.bench{font-size:12px;color:var(--ink2);display:flex;gap:14px;flex-wrap:wrap;margin:-4px 0 12px}
+.bench span{display:inline-flex;gap:6px;align-items:center}.bench b{width:10px;height:10px;border-radius:2px;display:inline-block}
+.kpi.hl{border:2px solid var(--teal2);background:#f4fafb}
+.statbar{display:flex;height:26px;border-radius:7px;overflow:hidden;gap:2px;margin:6px 0 4px}
+.statbar div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800;min-width:0;white-space:nowrap;overflow:hidden}
+.stlg{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink2)}
+.stlg span{display:inline-flex;gap:6px;align-items:center}.stlg b{width:10px;height:10px;border-radius:2px;display:inline-block}
+.etbl{width:100%;border-collapse:collapse;font-size:13px}
+.etbl th{position:sticky;top:0;z-index:2;cursor:default;white-space:nowrap}
+.etbl th.s{cursor:pointer}.etbl th.s:hover{background:#0a6a7f}
+.etbl td{text-align:center;padding:7px 8px}
+.etbl td.t{text-align:left}
+.etbl tr.clk{cursor:pointer}.etbl tr.clk:hover td{background:#f4fafb}
+.scroll{max-height:620px;overflow:auto}
+.dv{display:inline-flex;align-items:center;gap:6px;justify-content:flex-end;min-width:150px}
+.dv .z{position:relative;width:90px;height:10px;background:#f0f4f6;border-radius:3px}
+.dv .z i{position:absolute;top:0;height:10px;border-radius:2px}
+.dv .z:after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:#9fb3bc}
+.dif{font-weight:800;font-variant-numeric:tabular-nums}
+.dif.r{color:var(--bad)}.dif.a{color:var(--warn)}.dif.o{color:var(--ink)}
+.locs{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-start}
+.locs span{font-size:11px;padding:2px 6px;border-radius:8px;background:#edf2f4;white-space:nowrap}
+.locs span.r{background:var(--badS);color:var(--bad);font-weight:700}.locs span.a{background:var(--warnS);color:var(--warn);font-weight:700}
+.ctl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;font-size:13px}
+.ctl input,.ctl select{padding:6px 8px;border:1px solid #b9ccd4;border-radius:7px;width:auto}
+.hm{border-collapse:separate;border-spacing:2px;font-size:12px}
+.hm th{background:#fff;color:var(--ink2);font-weight:700;padding:6px 4px;position:sticky;top:0;z-index:2;white-space:nowrap}
+.hm th.v{writing-mode:vertical-rl;transform:rotate(180deg);height:110px;text-align:left}
+.hm td{min-width:58px;text-align:center;padding:6px 4px;border-radius:4px;font-variant-numeric:tabular-nums;font-weight:600}
+.hm td.n{position:sticky;left:0;background:#fff;text-align:left;white-space:nowrap;font-weight:700;z-index:1;padding-right:10px}
+.hm td.na{background:#f7f9fa;color:#b5c3c9;font-weight:400}
+.grad{height:10px;width:260px;border-radius:5px;background:linear-gradient(90deg,#b71c1c,#f2b8b5 40%,#f4f6f7 50%,#b9d3ee 60%,#1e5aa8)}
+.files td{text-align:left}
+.drop{border:2px dashed #b9ccd4;border-radius:12px;padding:18px;text-align:center;color:var(--ink2);background:#fafcfd;cursor:pointer}
+.drop.over{border-color:var(--teal2);background:var(--tealS)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:1000px){.efilt{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
 @media(max-width:1000px){
   header{flex-direction:column;align-items:stretch;background:var(--teal)}
   header h1,header p{color:#fff}
@@ -266,7 +319,69 @@ iframe#estande{width:100%;height:calc(100vh - 170px);min-height:720px;border:0;b
   </section>
 
   <!-- ESTANDE -->
-  <section class="view" id="v-estande"><iframe id="estande" title="Análise de estande"></iframe></section>
+  <section class="view" id="v-estande">
+    <div class="efilt">
+      <label>Região<select id="eReg"><option value="">Todas</option></select></label>
+      <label>Localidade<select id="eLoc"><option value="">Todas</option></select></label>
+      <label>Tipo de material<select id="eTipo"><option value="">Todos</option></select></label>
+      <label>Material<input type="text" id="eQ" placeholder="Buscar cultivar…" list="eMats"><datalist id="eMats"></datalist></label>
+      <label class="faixa">Faixa de diferença de população (%)
+        <div class="lin"><input type="number" id="eMin" step="1"> a <input type="number" id="eMax" step="1">
+          <button class="btn" id="eRuim" title="Só parcelas com estande ruim">≤ −15%</button><button class="btn" id="eLimpa">Limpar</button></div>
+        <div class="dual"><div class="trk"></div><div class="sel" id="eSel"></div><input type="range" id="eRMin"><input type="range" id="eRMax"></div>
+      </label>
+    </div>
+    <div class="bench"><span><b style="background:var(--bad)"></b>Estande ruim: −15% ou pior</span><span><b style="background:#e0a100"></b>Atenção: entre −15% e −10%</span><span><b style="background:var(--teal3)"></b>Adequado: acima de −10%</span><span>Melhor estande = diferença próxima de 0</span></div>
+    <div class="subtabs" id="eSubs">
+      <button data-s="geral" class="on">Visão geral</button>
+      <button data-s="ajuste">Ajuste de semeadura</button>
+      <button data-s="rank">Piores e melhores cultivares</button>
+      <button data-s="mapa">Mapa de calor</button>
+      <button data-s="parc">Parcelas</button>
+      <button data-s="arq">Arquivos e importação</button>
+    </div>
+
+    <div class="esub on" id="es-geral">
+      <div class="kpis" id="eK"></div>
+      <div class="card"><h3>Situação das parcelas</h3><div class="statbar" id="eStat"></div><div class="stlg" id="eStatL"></div></div>
+      <div class="card"><h3>Distribuição da diferença de população</h3><div class="sub">Quantidade de parcelas em cada faixa de 5%. A faixa selecionada nos filtros fica destacada.</div><div class="chart" id="eHist"><div class="tip" id="eHistTip"></div></div></div>
+      <div class="grid2">
+        <div class="card" style="padding:0;overflow:hidden"><div style="padding:14px 16px 0"><h3>Localidades</h3><div class="sub">Clique numa localidade para filtrar. "Testemunha" é a média da testemunha (NEO680 IPRO / Filtro) no local: se ela também está ruim, o problema tende a ser o local ou a semeadura, não a semente.</div></div><div class="scroll"><table class="etbl" id="eLocT"></table></div></div>
+        <div class="card" id="eQualCard"><h3>Qualidade da semente × estande</h3><div class="sub" id="eQualSub"></div><div class="ctl"><label>Eixo: <select id="eQx"><option value="vigor">Vigor (%)</option><option value="germ">Germinação (%)</option></select></label></div><div class="chart" id="eQual"><div class="tip" id="eQualTip"></div></div></div>
+      </div>
+    </div>
+
+    <div class="esub" id="es-ajuste">
+      <div class="rule">Cultivares com estande <b>no limite ou abaixo dele em várias localidades</b>. O ajuste sugerido é o aumento de sementes por metro para compensar a perda média: se o estande ficou 12% abaixo, semear 1 ÷ 0,88 = <b>+14%</b>.</div>
+      <div class="ctl"><label>Limite: <input type="number" id="aLim" value="-10" step="1" style="width:70px"> %</label><label>Mínimo de localidades abaixo do limite: <input type="number" id="aMin" value="2" min="1" step="1" style="width:60px"></label><span class="note" id="aInfo"></span><button class="btn" id="aCsv" style="margin-left:auto">Exportar CSV</button></div>
+      <div class="card" style="padding:0;overflow:hidden"><div class="scroll"><table class="etbl" id="aT"></table></div></div>
+    </div>
+
+    <div class="esub" id="es-rank">
+      <div class="ctl"><label>Mínimo de localidades avaliadas: <input type="number" id="rMin" value="2" min="1" step="1" style="width:60px"></label><label>Mostrar: <select id="rN"><option>10</option><option selected>15</option><option>25</option><option value="999">Todos</option></select></label><span class="note">"vs. testemunha" = diferença do material menos a da testemunha no mesmo local (tira o efeito do local).</span></div>
+      <div class="grid2">
+        <div class="card" style="padding:0;overflow:hidden"><div style="padding:14px 16px 0"><h3>Piores estandes — pior qualidade de semente</h3><div class="sub">Maior perda média de população</div></div><table class="etbl" id="rPior"></table></div>
+        <div class="card" style="padding:0;overflow:hidden"><div style="padding:14px 16px 0"><h3>Melhores estandes — mais perto de 0</h3><div class="sub">Menor desvio médio da população recomendada</div></div><table class="etbl" id="rMelhor"></table></div>
+      </div>
+    </div>
+
+    <div class="esub" id="es-mapa">
+      <div class="ctl"><label>Ordenar: <select id="hOrd"><option value="m">Pior média primeiro</option><option value="n">Nome</option><option value="t">Tipo</option></select></label><span class="note">Diferença média do material em cada localidade.</span><span style="display:inline-flex;gap:6px;align-items:center;margin-left:auto" class="note">−30%<span class="grad"></span>+30%</span></div>
+      <div class="card" style="padding:8px"><div class="scroll" style="max-height:720px"><table class="hm" id="hT"></table></div></div>
+    </div>
+
+    <div class="esub" id="es-parc">
+      <div class="ctl"><span class="note" id="pInfo"></span><button class="btn" id="pCsv" style="margin-left:auto">Exportar CSV</button></div>
+      <div class="card" style="padding:0;overflow:hidden"><div class="scroll" style="max-height:720px"><table class="etbl" id="pT"></table></div></div>
+    </div>
+
+    <div class="esub" id="es-arq">
+      <div class="card"><h3>Incluir avaliações</h3><div class="sub">Arraste as planilhas .xlsx aqui ou clique para escolher. O painel reconhece o modelo de cada região (M301, M303, M304) pelo cabeçalho e lê a diferença (%). A localidade sai do nome do arquivo ou da coluna "Ensaio". Se mandar de novo a mesma localidade, vale o arquivo mais recente.</div>
+        <div class="drop" id="eDrop">📄 Soltar planilhas aqui ou <b>clique para escolher</b><input type="file" id="eFile" accept=".xlsx" multiple hidden></div></div>
+      <div class="card" style="padding:0;overflow:hidden"><table class="etbl files" id="fT"></table></div>
+      <div class="card"><h3>Nomes unificados</h3><div class="sub">Grafias diferentes que o painel está contando como o mesmo material (inclui as variações "Pop 1 / Pop 3"). Se faltar algum, cadastre em <b>dados/apelidos_materiais.csv</b>.</div><div id="uL"></div></div>
+    </div>
+  </section>
 </main>
 <div class="toast" id="toast"></div>
 
@@ -313,7 +428,8 @@ $('hoje').onclick=()=>setData(null);
 document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='v-'+b.dataset.v));
-  if(b.dataset.v==='estande'&&!$('estande').src)$('estande').src='estande.html';
+  document.querySelector('.datebox').style.visibility=b.dataset.v==='estande'?'hidden':'';
+  if(b.dataset.v==='estande')abrirEstande();
   if(b.dataset.v==='history')desenhaGrafico();
 });
 
@@ -508,5 +624,6 @@ setInterval(()=>{if(editando===null&&confirmar===null)carregar(true)},300000);
 window.addEventListener('focus',()=>{if(D&&editando===null)carregar(true)});
 syncData(); carregar(true);
 </script>
+<script src="estande.js"></script>
 </body>
 </html>

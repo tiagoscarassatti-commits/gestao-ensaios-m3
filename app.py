@@ -38,6 +38,33 @@ def preparar_dados():
     if not up.exists():
         shutil.copytree(INICIAIS / 'uploads', up)
     E.UP = up
+    E.APELIDOS = DADOS / 'apelidos_materiais.csv'
+    if not E.APELIDOS.exists():
+        E.APELIDOS.write_text(
+            '# Use este arquivo quando duas grafias do mesmo material não forem unificadas sozinhas.\n'
+            '# Formato: grafia na planilha;nome padrão   (uma por linha, sem o # no início)\n'
+            '# Exemplo:\n'
+            '# 6525 I2X;DAGMA 6525 I2X\n', encoding='utf-8')
+
+
+def estande():
+    try:
+        E.LOCAIS_REDE = [(x['loc'], x['micro'], x['c']) for x in ler_rede()[2]]
+    except Exception:
+        E.LOCAIS_REDE = []
+    return E.scan()
+
+
+def remover_estande(corpo):
+    nome = Path(str(corpo.get('arquivo', ''))).name
+    alvo = E.UP / nome
+    if not nome.lower().endswith('.xlsx') or not alvo.exists():
+        raise ValueError('Arquivo não encontrado.')
+    lixeira = E.UP.parent / 'uploads_removidos'
+    lixeira.mkdir(exist_ok=True)
+    destino = lixeira / (datetime.now().strftime('%Y%m%d-%H%M%S_') + nome)
+    shutil.move(str(alvo), str(destino))
+    return estande()
 
 
 def arq_rede():
@@ -201,7 +228,7 @@ class H(SimpleHTTPRequestHandler):
         p = urlparse(self.path).path
         try:
             if p == '/api/estande/data':
-                return self.j(E.scan())
+                return self.j(estande())
             if p == '/api/m3/data':
                 return self.j(m3data())
         except Exception as e:
@@ -224,7 +251,9 @@ class H(SimpleHTTPRequestHandler):
                     if fn.lower().endswith('.xlsx'):
                         (E.UP / fn).write_bytes(x.get_payload(decode=True))
                         saved.append(fn)
-                return self.j({'saved': saved, 'result': E.scan()})
+                return self.j({'saved': saved, 'result': estande()})
+            if p == '/api/estande/remover':
+                return self.j(remover_estande(json.loads(body.decode('utf-8'))))
         except Exception as e:
             return self.erro(e)
         self.j({'erro': 'rota não encontrada'}, 404)
