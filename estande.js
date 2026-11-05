@@ -1,5 +1,6 @@
 /* ===================== ANÁLISE DE ESTANDE ===================== */
-let ES = null, eSub = 'geral', eConf = null;
+let ES = null, eSub = 'geral', eConf = null, eArr = null, eArrFim = null;
+document.addEventListener('mouseup', () => { if (eArr != null && !document.getElementById('eHist').matches(':hover')) eArr = null });
 const RUIM = -15, ATENC = -10;
 const COR = { r: '#c62828', a: '#e0a100', o: '#00697d', p: '#1e5aa8' };
 const st = d => d <= RUIM ? 'r' : d <= ATENC ? 'a' : 'o';
@@ -73,13 +74,14 @@ document.querySelectorAll('#eSubs button').forEach(b => b.onclick = () => {
   document.querySelectorAll('.esub').forEach(x => x.classList.toggle('on', x.id === 'es-' + eSub));
   renderEstande();
 });
-['aLim', 'aMin', 'rMin', 'rN', 'hOrd', 'eQx'].forEach(id => $(id).addEventListener('input', renderEstande));
+['aLim', 'aMin', 'rMin', 'rN', 'hOrd'].forEach(id => $(id).addEventListener('input', renderEstande));
 
 function base() {
   const reg = $('eReg').value, loc = $('eLoc').value, tipo = $('eTipo').value, q = semAc($('eQ').value.trim());
   return ES.parcelas.filter(r => (!reg || r.micro === reg) && (!loc || r.local === loc) && (!tipo || r.tipo === tipo) && (!q || semAc(r.nome).includes(q)));
 }
-const naFaixa = r => { const [a, b] = faixa(); return (a == null || r.dif >= a) && (b == null || r.dif <= b) };
+// faixa (a, b]: igual às barras do histograma, para os números baterem
+const naFaixa = r => { const [a, b] = faixa(); return (a == null || r.dif > a || (a <= eDom[0] && r.dif >= a)) && (b == null || r.dif <= b) };
 function textoFaixa() {
   const [a, b] = faixa();
   if (a == null && b == null) return 'todas as faixas';
@@ -91,7 +93,7 @@ function textoFaixa() {
 /* média da testemunha por localidade (independe dos filtros de tipo/material) */
 function testemunhas() {
   const t = {};
-  ES.parcelas.filter(r => r.tipo === 'Testemunha').forEach(r => (t[r.local] = t[r.local] || []).push(r.dif));
+  ES.parcelas.filter(r => r.tipo === 'Filtro').forEach(r => (t[r.local] = t[r.local] || []).push(r.dif));
   for (const k in t) t[k] = media(t[k]);
   return t;
 }
@@ -99,16 +101,15 @@ function testemunhas() {
 function porMaterial(B) {
   const M = new Map(), T = testemunhas();
   B.forEach(r => {
-    let m = M.get(r.k); if (!m) M.set(r.k, m = { k: r.k, nome: r.nome, tipo: r.tipo, L: {}, germ: [], vigor: [], n: 0 });
+    let m = M.get(r.k); if (!m) M.set(r.k, m = { k: r.k, nome: r.nome, tipo: r.tipo, L: {}, n: 0 });
     (m.L[r.local] = m.L[r.local] || { v: [], micro: r.micro }).v.push(r.dif);
-    if (r.germ != null) m.germ.push(r.germ); if (r.vigor != null) m.vigor.push(r.vigor); m.n++;
+    m.n++;
   });
   for (const m of M.values()) {
     m.locs = Object.entries(m.L).map(([local, o]) => ({ local, micro: o.micro, d: media(o.v) })).sort((a, b) => a.d - b.d);
     m.media = media(m.locs.map(x => x.d));
-    const vs = m.locs.filter(x => T[x.local] != null && m.tipo !== 'Testemunha').map(x => x.d - T[x.local]);
+    const vs = m.locs.filter(x => T[x.local] != null && m.tipo !== 'Filtro').map(x => x.d - T[x.local]);
     m.vsT = vs.length ? media(vs) : null;
-    m.germM = media(m.germ); m.vigorM = media(m.vigor);
   }
   return [...M.values()];
 }
@@ -140,10 +141,10 @@ function rGeral(B) {
     const d = o.v.map(r => r.dif), pior = o.v.reduce((a, b) => a.dif < b.dif ? a : b);
     return { loc, micro: o.micro, n: d.length, m: media(d), t: T[loc], ruim: d.filter(x => x <= RUIM).length, pior };
   }).sort((a, b) => a.m - b.m);
-  $('eLocT').innerHTML = `<thead><tr><th style="text-align:left">Localidade</th><th>Região</th><th>Parcelas</th><th>Dif. média</th><th>Testemunha</th><th>Ruins</th><th style="text-align:left">Pior material</th></tr></thead><tbody>` +
+  $('eLocT').innerHTML = `<thead><tr><th style="text-align:left">Localidade</th><th>Região</th><th>Parcelas</th><th>Dif. média</th><th>Filtro (NEO680)</th><th>Ruins</th><th style="text-align:left">Pior material</th></tr></thead><tbody>` +
     linhas.map(x => `<tr class="clk" data-loc="${esc(x.loc)}"><td class="t"><b>${esc(x.loc)}</b></td><td>${x.micro}</td><td>${x.n}</td><td>${difHtml(x.m)}</td><td>${difHtml(x.t)}</td><td>${x.ruim ? `<span class="chip bad">${x.ruim}</span>` : '0'}</td><td class="t">${esc(x.pior.nome)} ${difHtml(x.pior.dif)}</td></tr>`).join('') + '</tbody>';
   $('eLocT').querySelectorAll('tr.clk').forEach(tr => tr.onclick = () => { $('eLoc').value = tr.dataset.loc; renderEstande() });
-  qualidade(B);
+  materiaisFaixa(B);
 }
 
 function histograma(B) {
@@ -170,35 +171,21 @@ function histograma(B) {
   box.insertAdjacentHTML('afterbegin', `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Histograma da diferença de população">${g}</svg>`);
   const tip = $('eHistTip');
   box.querySelectorAll('.hb').forEach(r => {
-    r.onmousemove = e => { const b = bins[+r.dataset.i], bb = box.getBoundingClientRect(); tip.innerHTML = `<b>${pp(b.a)} a ${pp(b.b)}</b>${b.n} parcela${b.n === 1 ? '' : 's'} (${B.length ? Math.round(b.n / B.length * 100) : 0}%)<div class="note">clique para filtrar esta faixa</div>`; tip.style.display = 'block'; tip.style.left = Math.min(e.clientX - bb.left + 12, bb.width - 190) + 'px'; tip.style.top = '8px' };
+    r.onmousemove = e => {
+      const i = +r.dataset.i, b = bins[i], bb = box.getBoundingClientRect();
+      if (eArr != null) { const i0 = Math.min(eArr, i), i1 = Math.max(eArr, i); eArrFim = i; box.querySelectorAll('.hb').forEach(x => x.setAttribute('fill', +x.dataset.i >= i0 && +x.dataset.i <= i1 ? 'rgba(0,103,122,.12)' : 'transparent')) }
+      tip.innerHTML = `<b>${pp(b.a)} a ${pp(b.b)}</b>${b.n} parcela${b.n === 1 ? '' : 's'} (${B.length ? Math.round(b.n / B.length * 100) : 0}%)<div class="note">clique ou arraste para ver os materiais</div>`; tip.style.display = 'block'; tip.style.left = Math.min(e.clientX - bb.left + 12, bb.width - 190) + 'px'; tip.style.top = '8px';
+    };
     r.onmouseleave = () => tip.style.display = 'none';
-    r.onclick = () => { const b = bins[+r.dataset.i]; $('eMin').value = b.a; $('eMax').value = b.b; syncFaixa(); renderEstande() };
+    r.onmousedown = e => { e.preventDefault(); eArr = eArrFim = +r.dataset.i };
   });
-}
-
-function qualidade(B) {
-  const ax = $('eQx').value, pts = B.filter(r => r[ax] != null);
-  const box = $('eQual'); box.querySelector('svg')?.remove();
-  if (!pts.length) { $('eQualSub').textContent = 'Só as planilhas do modelo M304 trazem germinação e vigor. Não há dados com os filtros atuais.'; return }
-  const xs = pts.map(r => r[ax]), ys = pts.map(r => r.dif), mx = media(xs), my = media(ys);
-  const cov = xs.reduce((s, x, i) => s + (x - mx) * (ys[i] - my), 0), vx = xs.reduce((s, x) => s + (x - mx) ** 2, 0), vy = ys.reduce((s, y) => s + (y - my) ** 2, 0);
-  const rr = vx && vy ? cov / Math.sqrt(vx * vy) : 0;
-  $('eQualSub').innerHTML = `${pts.length} parcelas com ${ax === 'vigor' ? 'vigor' : 'germinação'} informado. Correlação: <b>${rr.toFixed(2).replace('.', ',')}</b> ${Math.abs(rr) < .2 ? '(fraca: o estande quase não acompanha a qualidade do lote)' : rr > 0 ? '(quanto melhor o lote, melhor o estande)' : '(relação inversa)'}.`;
-  const W = box.offsetWidth || 500, H = 260, m = { l: 44, r: 12, t: 10, b: 30 }, iw = W - m.l - m.r, ih = H - m.t - m.b;
-  const x0 = Math.floor(Math.min(...xs) - 1), x1 = Math.ceil(Math.max(...xs) + 1), y0 = Math.floor(Math.min(...ys, -20) / 10) * 10, y1 = Math.ceil(Math.max(...ys, 10) / 10) * 10;
-  const X = v => m.l + (v - x0) / (x1 - x0 || 1) * iw, Y = v => m.t + ih - (v - y0) / (y1 - y0) * ih;
-  let g = '';
-  for (let v = y0; v <= y1; v += 10) g += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="${v === 0 ? '#9fb3bc' : '#e6eef1'}"/><text x="${m.l - 6}" y="${Y(v) + 4}" text-anchor="end" font-size="11" fill="#6b7f8a">${v}%</text>`;
-  g += `<line x1="${m.l}" x2="${W - m.r}" y1="${Y(RUIM)}" y2="${Y(RUIM)}" stroke="#c62828" stroke-dasharray="4 3" opacity=".7"/>`;
-  const passo = (x1 - x0) > 20 ? 5 : 2;
-  for (let v = Math.ceil(x0 / passo) * passo; v <= x1; v += passo) g += `<text x="${X(v)}" y="${H - 10}" text-anchor="middle" font-size="11" fill="#6b7f8a">${v}%</text>`;
-  pts.forEach((r, i) => g += `<circle data-i="${i}" cx="${X(r[ax])}" cy="${Y(r.dif)}" r="5" fill="${r.dif < 0 ? COR[st(r.dif)] : COR.p}" fill-opacity=".75" stroke="#fff" stroke-width="1.5"/>`);
-  box.insertAdjacentHTML('afterbegin', `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Dispersão qualidade da semente e estande">${g}</svg>`);
-  const tip = $('eQualTip');
-  box.querySelectorAll('circle').forEach(c => {
-    c.onmouseenter = () => { const r = pts[+c.dataset.i], bb = box.getBoundingClientRect(); tip.innerHTML = `<b>${esc(r.nome)}</b>${esc(r.local)}<div class="r"><span>Germinação</span><span>${r.germ ?? '–'}%</span></div><div class="r"><span>Vigor</span><span>${r.vigor ?? '–'}%</span></div><div class="r"><span>Diferença</span><span>${pp(r.dif)}</span></div>`; tip.style.display = 'block'; tip.style.left = Math.min(+c.getAttribute('cx') * bb.width / W + 10, bb.width - 190) + 'px'; tip.style.top = Math.max(0, +c.getAttribute('cy') * bb.height / H - 40) + 'px'; c.setAttribute('r', 7) };
-    c.onmouseleave = () => { tip.style.display = 'none'; c.setAttribute('r', 5) };
-  });
+  box.onmouseup = () => {
+    if (eArr == null) return;
+    const i0 = Math.min(eArr, eArrFim), i1 = Math.max(eArr, eArrFim), a = bins[i0].a, b = bins[i1].b; eArr = null;
+    const [fa, fb] = faixa();
+    if (i0 === i1 && fa === a && fb === b) { $('eMin').value = ''; $('eMax').value = '' } else { $('eMin').value = a; $('eMax').value = b }
+    syncFaixa(); renderEstande();
+  };
 }
 
 let aLinhas = [];
@@ -223,11 +210,10 @@ $('aCsv').onclick = () => {
 
 function rRank(B) {
   const mn = Math.max(1, +$('rMin').value || 1), N = +$('rN').value, M = porMaterial(B).filter(m => m.locs.length >= mn);
-  const temQ = M.some(m => m.vigorM != null);
   const tab = (lista, alvo) => {
-    $(alvo).innerHTML = `<thead><tr><th>#</th><th style="text-align:left">Cultivar</th><th>Locais</th><th>Dif. média</th><th>vs. testemunha</th><th>Ruins</th>${temQ ? '<th>Germ. / Vigor</th>' : ''}</tr></thead><tbody>` +
-      (lista.length ? lista.slice(0, N).map((m, i) => `<tr><td class="note">${i + 1}</td><td class="t"><b>${esc(m.nome)}</b><div class="note">${esc(m.tipo)}</div></td><td>${m.locs.length}</td><td>${dvBar(m.media)}</td><td>${m.vsT == null ? '<span class="note">–</span>' : `<span class="dif ${m.vsT < -5 ? 'r' : 'o'}">${(m.vsT > 0 ? '+' : '') + m.vsT.toFixed(1).replace('.', ',')} p.p.</span>`}</td><td>${(c => c ? `<span class="chip bad">${c}/${m.locs.length}</span>` : '0')(m.locs.filter(x => x.d <= RUIM).length)}</td>${temQ ? `<td class="note">${m.germM == null ? '–' : Math.round(m.germM) + '% / ' + Math.round(m.vigorM) + '%'}</td>` : ''}</tr>`).join('')
-        : `<tr><td colspan="7" class="empty" style="text-align:center;padding:20px">Nenhuma cultivar avaliada em ${mn} ou mais localidades.</td></tr>`) + '</tbody>';
+    $(alvo).innerHTML = `<thead><tr><th>#</th><th style="text-align:left">Cultivar</th><th>Locais</th><th>Dif. média</th><th>vs. Filtro</th><th>Ruins</th></tr></thead><tbody>` +
+      (lista.length ? lista.slice(0, N).map((m, i) => `<tr><td class="note">${i + 1}</td><td class="t"><b>${esc(m.nome)}</b><div class="note">${esc(m.tipo)}</div></td><td>${m.locs.length}</td><td>${dvBar(m.media)}</td><td>${m.vsT == null ? '<span class="note">–</span>' : `<span class="dif ${m.vsT < -5 ? 'r' : 'o'}">${(m.vsT > 0 ? '+' : '') + m.vsT.toFixed(1).replace('.', ',')} p.p.</span>`}</td><td>${(c => c ? `<span class="chip bad">${c}/${m.locs.length}</span>` : '0')(m.locs.filter(x => x.d <= RUIM).length)}</td></tr>`).join('')
+        : `<tr><td colspan="6" class="empty" style="text-align:center;padding:20px">Nenhuma cultivar avaliada em ${mn} ou mais localidades.</td></tr>`) + '</tbody>';
   };
   tab([...M].sort((a, b) => a.media - b.media), 'rPior');
   tab([...M].sort((a, b) => Math.abs(a.media) - Math.abs(b.media)), 'rMelhor');
@@ -248,20 +234,41 @@ function rMapa(B) {
 }
 
 let pOrd = { c: 'dif', asc: true };
-const PCOLS = [['local', 'Localidade'], ['micro', 'Região'], ['pcl', 'Parcela'], ['nome', 'Cultivar'], ['tipo', 'Tipo'], ['alvo', 'Pop. recomendada'], ['estande', 'Estande inicial'], ['dif', 'Dif. população'], ['st', 'Status']];
-function rParc(B) {
-  const F = B.filter(naFaixa).map(r => ({ ...r, st: STN[st(r.dif)] }));
-  const { c, asc } = pOrd;
+const PCOLS = [['local', 'Localidade'], ['micro', 'Região'], ['nome', 'Cultivar'], ['tipo', 'Tipo'], ['alvo', 'Pop. recomendada'], ['estande', 'Estande inicial'], ['dif', 'Dif. população'], ['st', 'Status']];
+function tabParcelas(lista, el, ord, refazer) {
+  const F = lista.map(r => ({ ...r, st: STN[st(r.dif)] }));
+  const { c, asc } = ord;
   F.sort((a, b) => { const x = a[c], y = b[c]; const v = typeof x === 'number' && typeof y === 'number' ? x - y : String(x ?? '').localeCompare(String(y ?? ''), 'pt', { numeric: true }); return asc ? v : -v });
+  el.innerHTML = `<thead><tr>${PCOLS.map(([k, t]) => `<th class="s" data-c="${k}">${t}${k === c ? (asc ? ' ▲' : ' ▼') : ''}</th>`).join('')}</tr></thead><tbody>` +
+    F.map(r => `<tr><td class="t">${esc(r.local)}</td><td>${r.micro}</td><td class="t"><b>${esc(r.nome)}</b>${r.pop ? ` <span class="note">${r.pop}</span>` : ''}</td><td>${esc(r.tipo)}</td><td>${pt(r.alvo)}</td><td>${pt(r.estande)}</td><td>${difHtml(r.dif)}</td><td><span class="chip ${({ r: 'bad', a: 'warn', o: 'ok' })[st(r.dif)]}">${r.st}</span></td></tr>`).join('') + '</tbody>';
+  el.querySelectorAll('th.s').forEach(th => th.onclick = () => { ord.asc = ord.c === th.dataset.c ? !ord.asc : true; ord.c = th.dataset.c; refazer() });
+  if (!F.length) el.innerHTML += `<tbody><tr><td colspan="${PCOLS.length}" class="empty" style="text-align:center;padding:20px">Nenhuma parcela nesta faixa.</td></tr></tbody>`;
+}
+function rParc(B) {
+  const F = B.filter(naFaixa);
   $('pInfo').innerHTML = `<b>${F.length}</b> de ${B.length} parcelas (${B.length ? Math.round(F.length / B.length * 100) : 0}%) com diferença ${textoFaixa()}. Clique no título da coluna para ordenar.`;
-  $('pT').innerHTML = `<thead><tr>${PCOLS.map(([k, t]) => `<th class="s" data-c="${k}">${t}${k === c ? (asc ? ' ▲' : ' ▼') : ''}</th>`).join('')}</tr></thead><tbody>` +
-    F.map(r => `<tr><td class="t">${esc(r.local)}</td><td>${r.micro}</td><td>${esc(r.pcl ?? '')}</td><td class="t"><b>${esc(r.nome)}</b>${r.pop ? ` <span class="note">${r.pop}</span>` : ''}</td><td>${esc(r.tipo)}</td><td>${pt(r.alvo)}</td><td>${pt(r.estande)}</td><td>${difHtml(r.dif)}</td><td><span class="chip ${({ r: 'bad', a: 'warn', o: 'ok' })[st(r.dif)]}">${r.st}</span></td></tr>`).join('') + '</tbody>';
-  $('pT').querySelectorAll('th.s').forEach(th => th.onclick = () => { pOrd = { c: th.dataset.c, asc: pOrd.c === th.dataset.c ? !pOrd.asc : true }; rParc(base()) });
+  tabParcelas(F, $('pT'), pOrd, () => rParc(base()));
+}
+/* materiais da faixa escolhida no histograma (visão geral) */
+let mModo = 'p', mOrd = { c: 'dif', asc: true };
+document.querySelectorAll('#mModo button').forEach(b => b.onclick = () => { mModo = b.dataset.m; document.querySelectorAll('#mModo button').forEach(x => x.classList.toggle('on', x === b)); materiaisFaixa(base()) });
+function materiaisFaixa(B) {
+  const F = B.filter(naFaixa), [a, b] = faixa(), nMat = new Set(F.map(r => r.k)).size;
+  $('mTit').textContent = a == null && b == null ? 'Materiais — todas as faixas' : `Materiais com diferença ${textoFaixa()}`;
+  $('mSub').innerHTML = `<b>${F.length}</b> parcela${F.length === 1 ? '' : 's'} (${B.length ? Math.round(F.length / B.length * 100) : 0}%) · <b>${nMat}</b> materia${nMat === 1 ? 'l' : 'is'}` + (a == null && b == null ? ' · selecione uma faixa no gráfico acima' : ` · <a href="#" id="mLimpa" style="color:var(--teal2);font-weight:700">limpar seleção</a>`);
+  const lk = $('mLimpa'); if (lk) lk.onclick = e => { e.preventDefault(); $('eMin').value = ''; $('eMax').value = ''; syncFaixa(); renderEstande() };
+  if (mModo === 'p') return tabParcelas(F, $('mT'), mOrd, () => materiaisFaixa(base()));
+  const G = new Map();
+  F.forEach(r => { let g = G.get(r.k); if (!g) G.set(r.k, g = { nome: r.nome, tipo: r.tipo, v: [] }); g.v.push(r) });
+  const linhas = [...G.values()].map(g => ({ ...g, m: media(g.v.map(r => r.dif)) })).sort((x, y) => y.v.length - x.v.length || x.m - y.m);
+  $('mT').innerHTML = `<thead><tr><th style="text-align:left">Cultivar</th><th>Tipo</th><th>Parcelas na faixa</th><th>Dif. média na faixa</th><th style="text-align:left">Localidades</th></tr></thead><tbody>` +
+    (linhas.length ? linhas.map(g => `<tr><td class="t"><b>${esc(g.nome)}</b></td><td>${esc(g.tipo)}</td><td><b>${g.v.length}</b></td><td>${difHtml(g.m)}</td><td class="t"><div class="locs">${g.v.sort((x, y) => x.dif - y.dif).map(r => `<span class="${st(r.dif) === 'o' ? '' : st(r.dif)}">${esc(r.local)} ${pp(r.dif)}</span>`).join('')}</div></td></tr>`).join('')
+      : `<tr><td colspan="5" class="empty" style="text-align:center;padding:20px">Nenhuma parcela nesta faixa.</td></tr>`) + '</tbody>';
 }
 $('pCsv').onclick = () => {
   const F = base().filter(naFaixa);
-  csv('parcelas_estande.csv', [['Localidade', 'Região', 'Parcela', 'Cultivar', 'Variação', 'Tipo', 'Pop. recomendada', 'Estande inicial', 'Dif. população (%)', 'Status', 'Germinação (%)', 'Vigor (%)', 'Arquivo']].concat(
-    F.map(r => [r.local, r.micro, r.pcl ?? '', r.nome, r.pop ?? '', r.tipo, r.alvo == null ? '' : Math.round(r.alvo), r.estande == null ? '' : Math.round(r.estande), r.dif.toFixed(1), STN[st(r.dif)], r.germ ?? '', r.vigor ?? '', r.arquivo])));
+  csv('parcelas_estande.csv', [['Localidade', 'Região', 'Cultivar', 'Variação', 'Tipo', 'Pop. recomendada', 'Estande inicial', 'Dif. população (%)', 'Status', 'Arquivo']].concat(
+    F.map(r => [r.local, r.micro, r.nome, r.pop ?? '', r.tipo, r.alvo == null ? '' : Math.round(r.alvo), r.estande == null ? '' : Math.round(r.estande), r.dif.toFixed(1), STN[st(r.dif)], r.arquivo])));
 };
 
 function rArq() {

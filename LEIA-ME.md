@@ -40,10 +40,10 @@ O token fica salvo em `token_github.txt`, só lê este repositório e não vai p
 - **Histórico na data:** safra atual (DES) comparada às anteriores no mesmo dia/mês, com gráfico da evolução acumulada.
 - **Janelas de semeadura:** % de locais em Abertura, Intermediário e Fechamento, com filtro por área (Desenvolvimento/Pesquisa) e região, na data escolhida no topo.
 - **Registrar semeadura:** registrar, corrigir ou desfazer a data de semeadura de cada local.
-- **Análise de estande:** filtros por região, localidade, tipo, material e faixa de diferença de população, divididos em:
-  - *Visão geral:* quantas parcelas estão na faixa escolhida, situação (ruim ≤ −15%, atenção, adequado), histograma, localidades comparadas com a testemunha e qualidade da semente (germinação/vigor) × estande;
+- **Análise de estande:** filtros por região, localidade, tipo (Filtro, Comercial, Concorrente, Lançamento, Linhagem), material e faixa de diferença de população, divididos em:
+  - *Visão geral:* quantas parcelas estão na faixa escolhida, situação (ruim ≤ −15%, atenção, adequado), histograma em que clicar ou arrastar mostra os materiais da faixa, e localidades comparadas com o Filtro (NEO680);
   - *Ajuste de semeadura:* cultivares com −10% ou pior em várias localidades e o aumento de sementes sugerido, por região (exporta CSV);
-  - *Piores e melhores cultivares:* ranking pela diferença média, incluindo a comparação com a testemunha do mesmo local;
+  - *Piores e melhores cultivares:* ranking pela diferença média, incluindo a comparação com o Filtro (NEO680) do mesmo local;
   - *Mapa de calor:* cultivar × localidade;
   - *Parcelas:* tabela completa, ordenável, com exportação;
   - *Arquivos e importação:* inclui planilhas novas (arrastar e soltar), mostra o que foi lido e os nomes unificados.

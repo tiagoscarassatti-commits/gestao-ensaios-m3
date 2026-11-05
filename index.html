@@ -344,11 +344,13 @@ td{padding:8px;text-align:center;border-bottom:1px solid #e1eaed;font-variant-nu
     <div class="esub on" id="es-geral">
       <div class="kpis" id="eK"></div>
       <div class="card"><h3>Situação das parcelas</h3><div class="statbar" id="eStat"></div><div class="stlg" id="eStatL"></div></div>
-      <div class="card"><h3>Distribuição da diferença de população</h3><div class="sub">Quantidade de parcelas em cada faixa de 5%. A faixa selecionada nos filtros fica destacada.</div><div class="chart" id="eHist"><div class="tip" id="eHistTip"></div></div></div>
-      <div class="grid2">
-        <div class="card" style="padding:0;overflow:hidden"><div style="padding:14px 16px 0"><h3>Localidades</h3><div class="sub">Clique numa localidade para filtrar. "Testemunha" é a média da testemunha (NEO680 IPRO / Filtro) no local: se ela também está ruim, o problema tende a ser o local ou a semeadura, não a semente.</div></div><div class="scroll"><table class="etbl" id="eLocT"></table></div></div>
-        <div class="card" id="eQualCard"><h3>Qualidade da semente × estande</h3><div class="sub" id="eQualSub"></div><div class="ctl"><label>Eixo: <select id="eQx"><option value="vigor">Vigor (%)</option><option value="germ">Germinação (%)</option></select></label></div><div class="chart" id="eQual"><div class="tip" id="eQualTip"></div></div></div>
+      <div class="card"><h3>Distribuição da diferença de população</h3><div class="sub">Clique numa barra, ou clique e arraste por várias, para ver logo abaixo quais materiais estão nessa faixa. Clique de novo na mesma barra para limpar.</div><div class="chart" id="eHist" style="user-select:none"><div class="tip" id="eHistTip"></div></div></div>
+      <div class="card" style="padding:0;overflow:hidden">
+        <div style="padding:14px 16px 6px;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap"><div style="flex:1;min-width:260px"><h3 id="mTit">Materiais na faixa selecionada</h3><div class="sub" id="mSub" style="margin:0"></div></div>
+          <div class="subtabs" style="margin:0" id="mModo"><button data-m="p" class="on">Por parcela</button><button data-m="c">Por cultivar</button></div></div>
+        <div class="scroll" style="max-height:520px"><table class="etbl" id="mT"></table></div>
       </div>
+      <div class="card" style="padding:0;overflow:hidden"><div style="padding:14px 16px 0"><h3>Localidades</h3><div class="sub">Clique numa localidade para filtrar. A coluna "Filtro (NEO680)" mostra a média do NEO680 no local: se ele também ficou ruim, o problema tende a ser o local ou a semeadura, e não a semente.</div></div><div class="scroll"><table class="etbl" id="eLocT"></table></div></div>
     </div>
 
     <div class="esub" id="es-ajuste">
@@ -358,7 +360,7 @@ td{padding:8px;text-align:center;border-bottom:1px solid #e1eaed;font-variant-nu
     </div>
 
     <div class="esub" id="es-rank">
-      <div class="ctl"><label>Mínimo de localidades avaliadas: <input type="number" id="rMin" value="2" min="1" step="1" style="width:60px"></label><label>Mostrar: <select id="rN"><option>10</option><option selected>15</option><option>25</option><option value="999">Todos</option></select></label><span class="note">"vs. testemunha" = diferença do material menos a da testemunha no mesmo local (tira o efeito do local).</span></div>
+      <div class="ctl"><label>Mínimo de localidades avaliadas: <input type="number" id="rMin" value="2" min="1" step="1" style="width:60px"></label><label>Mostrar: <select id="rN"><option>10</option><option selected>15</option><option>25</option><option value="999">Todos</option></select></label><span class="note">"vs. Filtro" = diferença do material menos a do NEO680 no mesmo local, em pontos percentuais. Isso tira o efeito do local.</span></div>
       <div class="grid2">
         <div class="card" style="padding:0;overflow:hidden"><div style="padding:14px 16px 0"><h3>Piores estandes — pior qualidade de semente</h3><div class="sub">Maior perda média de população</div></div><table class="etbl" id="rPior"></table></div>
         <div class="card" style="padding:0;overflow:hidden"><div style="padding:14px 16px 0"><h3>Melhores estandes — mais perto de 0</h3><div class="sub">Menor desvio médio da população recomendada</div></div><table class="etbl" id="rMelhor"></table></div>

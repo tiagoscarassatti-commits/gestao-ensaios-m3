@@ -33,7 +33,7 @@ LOCAIS_PADRAO = {
 }
 MARCAS = ('BRASMAX', 'STINE', 'DAGMA', 'DAG')
 TECNOLOGIAS = {'I2X', 'IPRO', 'CE', 'RR', 'RR2', 'E3', 'XTD', 'XTEND', 'CONV', 'IPRO.'}
-CATEGORIAS = {'FILTRO': 'Testemunha', 'CHECK': 'Testemunha', 'TESTEMUNHA': 'Testemunha',
+CATEGORIAS = {'FILTRO': 'Filtro', 'CHECK': 'Filtro', 'TESTEMUNHA': 'Filtro',
               'COMERCIAL': 'Comercial', 'CONCORRENTE': 'Concorrente', 'CONCORRENTES': 'Concorrente',
               'LANCAMENTO': 'Lançamento', 'LINHAGEM': 'Linhagem', 'POPULACAO': None}
 
@@ -222,6 +222,21 @@ def ler_arquivo(p, apelidos):
     return regs, formato, local, micro
 
 
+def classificar(chave, nome, cats):
+    """Tipo do material. Regras fixas primeiro; depois a categoria que veio na planilha (M304)."""
+    n = plain(nome).replace(' ', '')
+    da_planilha = cats.most_common(1)[0][0] if cats else None
+    if chave == 'NEO680':
+        return 'Filtro'
+    if chave.startswith('SB'):
+        return 'Linhagem'
+    if n.startswith('STINE') or re.match(r'ST\d', n):
+        return 'Concorrente'
+    if n.startswith(('DM', 'DAG', 'NEO', 'BRASMAX')):
+        return 'Lançamento' if da_planilha == 'Lançamento' else 'Comercial'
+    return da_planilha or 'Sem classificação'
+
+
 def scan():
     apelidos = carregar_apelidos()
     arquivos, por_local = [], defaultdict(list)
@@ -253,12 +268,7 @@ def scan():
             cats[r['k']][r['cat']] += 1
     for r in parcelas:
         r['nome'] = max(nomes[r['k']].items(), key=lambda kv: (kv[1], len(kv[0])))[0]
-        if r['k'].startswith('SB'):
-            r['tipo'] = 'Linhagem'
-        elif cats[r['k']]:
-            r['tipo'] = cats[r['k']].most_common(1)[0][0]
-        else:
-            r['tipo'] = 'Sem classificação'
+        r['tipo'] = classificar(r['k'], r['nome'], cats[r['k']])
         del r['cat'], r['grafia']
     unificados = [{'nome': max(nomes[k].items(), key=lambda kv: (kv[1], len(kv[0])))[0], 'variantes': sorted(v)}
                   for k, v in variantes.items() if len(v) > 1]
