@@ -26,8 +26,9 @@ def janela(micro, d):
     if not d:
         return ''
     m = int(str(micro).replace('M', '').replace('.0', ''))
-    limites = {301: ((10, 5), (10, 25)), 302: ((10, 15), (11, 11)),
-               303: ((10, 15), (11, 11)), 304: ((10, 30), (11, 14))}
+    # fim da Abertura e fim do Intermediário (depois disso é Fechamento)
+    limites = {301: ((10, 5), (10, 20)), 302: ((10, 15), (11, 4)),
+               303: ((10, 15), (11, 4)), 304: ((10, 25), (11, 5))}
     if m not in limites:
         return '—'
     (am, ad), (im, idd) = limites[m]

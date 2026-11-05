@@ -3,3 +3,7 @@ dados/
 __pycache__/
 *.pyc
 ~$*.xlsx
+
+# credenciais e controle de versão locais
+token_github.txt
+versao.txt

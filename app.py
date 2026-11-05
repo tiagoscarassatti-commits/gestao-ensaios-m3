@@ -91,7 +91,6 @@ def ler_rede():
         safra = safra or str(pega(r, 'SAFRA') or '')
         micro = str(pega(r, 'MICRO') or '').replace('.0', '')
         real = como_data(pega(r, 'PLANTIO REAL'))
-        prev = como_data(pega(r, 'PLANTIO PREVISTO'))
         cur.append({
             'row': n,
             'loc': str(loc).strip(),
@@ -100,8 +99,6 @@ def ler_rede():
             'c': str(pega(r, 'CONDUÇÃO') or '').strip().upper(),
             'resp': str(pega(r, 'RESPONSAVEL') or '').strip().title(),
             'tipo': str(pega(r, 'TIPO ENSAIO') or '').strip(),
-            'prev': iso(prev),
-            'janPrev': str(pega(r, 'JANELA PREVISTO') or '').strip(),
             'real': iso(real),
             'janReal': P.janela(micro, real) if real else '',
         })
