@@ -174,6 +174,12 @@ class H(SimpleHTTPRequestHandler):
     def log_message(self, *a):
         pass
 
+    def end_headers(self):
+        # sem cache: depois de uma atualização o navegador sempre pega a versão nova
+        if not self.path.startswith('/api/'):
+            self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+        super().end_headers()
+
     def j(self, x, c=200):
         b = json.dumps(x, ensure_ascii=False, default=str).encode()
         self.send_response(c)
