@@ -6,54 +6,70 @@
 <title>Gestão de Ensaios M3</title>
 <style>
 :root{
-  --teal:#075b6d;--teal2:#00677a;--teal3:#00697d;--tealS:#e3f0f3;--ink:#08243d;--ink2:#40596a;--muted:#6b7f8a;
-  --bg:#eef3f5;--card:#fff;--line:#d4e1e6;--line2:#e6eef1;--track:#d8e2e6;
+  /* cores GDM */
+  --navy:#092A3B;--green:#B4BD00;--green2:#8C9300;--blue:#003DA6;--earth:#B67F5A;--gray:#898A8D;--gray2:#D0D0D0;
+  --teal:#092A3B;--teal2:#003DA6;--teal3:#B4BD00;--tealS:#eaf0fa;--ink:#092A3B;--ink2:#3d5463;--muted:#6f7c84;
+  --bg:#f2f4f6;--card:#fff;--line:#dfe4e8;--line2:#eceff2;--track:#e3e7ea;
   --ok:#16823b;--okS:#e4f4e8;--warn:#a85d00;--warnS:#fff3dc;--bad:#c62828;--badS:#fde8e8;
-  --prev:#c4711a;--other:#a9b8bf;--jAb:#e9c84a;--jIn:#5aaed1;--jFe:#e0896a;--jPe:#d8e2e6;
+  --prev:#B67F5A;--other:#b9bcc0;--jAb:#B4BD00;--jIn:#003DA6;--jFe:#B67F5A;--jPe:#dfe3e6;
 }
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Arial,sans-serif;font-size:14px}
 button,input,select{font:inherit;color:inherit}
-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 28px;
-  background:linear-gradient(110deg,#fff 0 56%,var(--teal) 56%);min-height:96px}
-header h1{margin:0;font-size:34px;color:#003c49;letter-spacing:-.5px}
-header p{margin:3px 0 0;color:var(--ink2)}
-.datebox{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);border-radius:12px;padding:9px 12px;color:#fff;display:flex;flex-direction:column;gap:6px;min-width:330px}
+/* ---------- layout com menu lateral ---------- */
+.sb{position:fixed;inset:0 auto 0 0;width:250px;background:var(--navy);color:#fff;display:flex;flex-direction:column;z-index:30;
+  background-image:radial-gradient(120% 60% at 0% 0%,rgba(180,189,0,.16),transparent 60%),radial-gradient(90% 50% at 100% 100%,rgba(0,61,166,.35),transparent 60%)}
+.sb .logo{padding:22px 22px 6px}.sb .logo img{width:128px;display:block}
+.sb .app{padding:0 22px 18px;font-size:13px;color:rgba(255,255,255,.7);border-bottom:1px solid rgba(255,255,255,.08)}
+.sb .app b{display:block;color:#fff;font-size:16px;letter-spacing:.2px}
+.sb nav{flex:1;overflow:auto;padding:10px 12px}
+.sb .grp{font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:var(--green);font-weight:800;padding:16px 10px 6px;display:flex;align-items:center;gap:8px}
+.sb .grp:after{content:"";flex:1;height:1px;background:rgba(180,189,0,.25)}
+.nv{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;color:rgba(255,255,255,.78);padding:9px 10px;border-radius:10px;cursor:pointer;font-weight:600;position:relative}
+.nv svg{width:18px;height:18px;flex:none;opacity:.8}
+.nv:hover{background:rgba(255,255,255,.07);color:#fff}
+.nv.active{background:linear-gradient(90deg,rgba(180,189,0,.22),rgba(180,189,0,.05));color:#fff}
+.nv.active:before{content:"";position:absolute;left:-12px;top:8px;bottom:8px;width:4px;border-radius:0 4px 4px 0;background:var(--green)}
+.nv.active svg{opacity:1;color:var(--green)}
+.nv .n{margin-left:auto;padding:1px 8px;border-radius:9px;background:var(--green);color:var(--navy);font-size:11px;font-weight:800}
+.sb .foot{padding:14px 22px 18px;border-top:1px solid rgba(255,255,255,.08);font-size:11px;color:rgba(255,255,255,.6);display:flex;flex-direction:column;gap:8px}
+.sb .foot button{border:1px solid rgba(255,255,255,.25);background:transparent;color:#fff;border-radius:8px;padding:7px 10px;font-weight:700;cursor:pointer}
+.sb .foot button:hover{background:rgba(255,255,255,.08)}
+.wrap{margin-left:250px;min-height:100vh}
+.top{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 28px 8px;max-width:1556px;margin:auto}
+.top .crumb{font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:var(--green2)}
+.top h1{margin:2px 0 0;font-size:28px;letter-spacing:-.4px;color:var(--navy)}
+.top p{margin:3px 0 0;color:var(--muted)}
+.datebox{background:var(--navy);border-radius:14px;padding:10px 12px;color:#fff;display:flex;flex-direction:column;gap:6px;min-width:330px;box-shadow:0 6px 18px rgba(9,42,59,.18)}
 .datebox .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.8px;opacity:.85;display:flex;justify-content:space-between;gap:8px}
 .datebox .ctl{display:flex;gap:6px;align-items:center}
 .datebox input{flex:1;padding:7px 9px;border-radius:8px;border:0;background:#fff;color:var(--ink);font-weight:700;min-width:0}
-.datebox button{border:0;border-radius:8px;padding:7px 10px;background:rgba(255,255,255,.18);color:#fff;font-weight:700;cursor:pointer}
-.datebox button:hover:not(:disabled){background:rgba(255,255,255,.3)}
+.datebox button{border:0;border-radius:8px;padding:7px 10px;background:rgba(255,255,255,.14);color:#fff;font-weight:700;cursor:pointer}
+.datebox button:hover:not(:disabled){background:rgba(255,255,255,.26)}
 .datebox button:disabled{opacity:.35;cursor:default}
-.datebox button.today{background:#fff;color:var(--teal)}
+.datebox button.today{background:var(--green);color:var(--navy)}
 .badge{display:inline-flex;align-items:center;gap:5px;font-weight:700;text-transform:none;letter-spacing:0;font-size:12px}
-.dot{width:8px;height:8px;border-radius:50%;background:#7fe0a0;box-shadow:0 0 0 3px rgba(127,224,160,.25)}
-.dot.past{background:#ffd27a;box-shadow:0 0 0 3px rgba(255,210,122,.25)}
-nav.tabs{position:sticky;top:0;z-index:20;display:flex;gap:6px;align-items:end;padding:10px 28px 0;background:var(--bg);border-bottom:1px solid var(--line)}
-.tab{border:0;border-radius:9px 9px 0 0;padding:11px 18px;background:#d6e3e8;color:#174c59;font-weight:700;cursor:pointer}
-.tab:hover{background:#cbdde3}
-.tab.active{background:var(--teal2);color:#fff}
-.tab .n{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:9px;background:var(--warnS);color:var(--warn);font-size:12px}
-.tab.active .n{background:rgba(255,255,255,.2);color:#fff}
-.status{margin-left:auto;align-self:center;color:var(--muted);font-size:12px;padding-bottom:8px;display:flex;gap:8px;align-items:center}
-.status button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:4px 9px;cursor:pointer;color:var(--teal);font-weight:700}
-main{max-width:1500px;margin:auto;padding:18px 26px 40px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(180,189,0,.3)}
+.dot.past{background:var(--earth);box-shadow:0 0 0 3px rgba(182,127,90,.3)}
+#eSubs{display:none}
+main{max-width:1556px;margin:auto;padding:12px 28px 40px}
 .view{display:none}.view.active{display:block}
 .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
-.toolbar select,.toolbar input{padding:8px 10px;border:1px solid #b9ccd4;border-radius:8px;background:#fff}
+.toolbar select,.toolbar input{padding:8px 10px;border:1px solid #c9d1d6;border-radius:8px;background:#fff}
 .toolbar .grow{flex:1;min-width:200px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(8,36,61,.05)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 1px 2px rgba(9,42,59,.04),0 8px 24px rgba(9,42,59,.04)}
 .card h3{margin:0 0 10px;font-size:16px}
 .card .sub{color:var(--muted);font-size:12px;margin:-6px 0 10px}
 .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
-.kpi{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:0 8px 24px rgba(9,42,59,.04);position:relative;overflow:hidden}
+.kpi:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--green)}
 .kpi .l{font-size:11px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
 .kpi .v{font-size:28px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
 .kpi .v small{font-size:14px;color:var(--muted);font-weight:700}
 .kpi .d{font-size:12px;color:var(--ink2)}
 .kpi.warn .v{color:var(--warn)}
 /* board */
-.board{background:#fff;border:1px solid #cfdee4;border-radius:14px;overflow:hidden;margin-bottom:14px}
+.board{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:14px}
 .head,.row,.total{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr .75fr}
 .head{background:var(--teal);color:#fff;font-weight:700}
 .head div,.row>div,.total>div{padding:13px;border-right:1px solid #d4dfe4;display:flex;align-items:center;justify-content:center}
@@ -64,15 +80,15 @@ main{max-width:1500px;margin:auto;padding:18px 26px 40px}
 .met{width:100%;text-align:center}.cap{display:none;font-size:11px;text-transform:uppercase;letter-spacing:.6px;opacity:.7;margin-bottom:2px}
 .frac{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums}
 .bar{height:12px;background:var(--track);border-radius:9px;overflow:hidden;margin:7px 0}
-.fill{height:100%;background:linear-gradient(90deg,#1298ae,#00596b);border-radius:9px}
-.pct{font-weight:800;color:#00687d}
+.fill{height:100%;background:linear-gradient(90deg,var(--green),var(--green2));border-radius:9px}
+.pct{font-weight:800;color:var(--green2)}
 .ring{--p:0;width:76px;height:76px;border-radius:50%;background:conic-gradient(var(--teal3) calc(var(--p)*1%),var(--track) 0);display:grid;place-items:center;position:relative}
 .ring:before{content:"";width:54px;height:54px;background:#fff;border-radius:50%}
 .ring span{position:absolute;font-weight:800;z-index:2;color:var(--ink)}
-.total{min-height:104px;background:#064f60;color:#fff}
-.total .ring{background:conic-gradient(#7fd3e1 calc(var(--p)*1%),rgba(255,255,255,.18) 0)}
-.total .ring:before{background:#064f60}.total .ring span{color:#fff}
-.total .pct{color:#fff}.total .bar{background:rgba(255,255,255,.18)}.total .fill{background:#7fd3e1}
+.total{min-height:104px;background:var(--navy);color:#fff}
+.total .ring{background:conic-gradient(var(--green) calc(var(--p)*1%),rgba(255,255,255,.18) 0)}
+.total .ring:before{background:var(--navy)}.total .ring span{color:#fff}
+.total .pct{color:#fff}.total .bar{background:rgba(255,255,255,.18)}.total .fill{background:var(--green)}
 .adv{display:flex;align-items:center;gap:10px}
 .adv strong{font-size:18px}
 /* listas */
@@ -80,7 +96,7 @@ main{max-width:1500px;margin:auto;padding:18px 26px 40px}
 .list{display:flex;flex-direction:column}
 .li{display:grid;grid-template-columns:86px 1fr auto;gap:10px;align-items:center;padding:8px 2px;border-bottom:1px solid var(--line2)}
 .li:last-child{border-bottom:0}
-.li .dt{font-weight:800;font-variant-numeric:tabular-nums;color:var(--teal)}
+.li .dt{font-weight:800;font-variant-numeric:tabular-nums;color:var(--blue)}
 .li .nm{font-weight:650}
 .li .meta{font-size:12px;color:var(--muted)}
 .empty{color:var(--muted);padding:12px 2px}
@@ -89,13 +105,13 @@ main{max-width:1500px;margin:auto;padding:18px 26px 40px}
 .chip.warn{background:var(--warnS);color:var(--warn)}
 .chip.bad{background:var(--badS);color:var(--bad)}
 .chip.neu{background:#edf2f4;color:var(--ink2)}
-.chip.ab{background:#fff6c2;color:#7a6000}.chip.in{background:#d8eef7;color:#145a78}.chip.fe{background:#fbe1d7;color:#9a3d1c}
+.chip.ab{background:#f1f3c7;color:#5f6300}.chip.in{background:#dde7f7;color:#003DA6}.chip.fe{background:#f3e6dc;color:#7d4e2f}
 /* histórico */
-.rule{background:#fff;border:1px solid #cfdee4;border-left:4px solid var(--teal2);border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.rule{background:#fff;border:1px solid var(--line);border-left:4px solid var(--green);border-radius:10px;padding:12px 14px;margin-bottom:12px}
 .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
-.season{background:#fff;border:1px solid #cfdee4;border-radius:12px;padding:14px}
+.season{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px}
 .season h3{margin:0 0 6px;font-size:16px;display:flex;justify-content:space-between;align-items:center}
-.season.now{border:2px solid #078197;box-shadow:0 2px 10px rgba(7,129,151,.12)}
+.season.now{border:2px solid var(--green);box-shadow:0 4px 14px rgba(180,189,0,.18)}
 .maps{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
 .maps img{width:100%;height:64px;object-fit:contain}
 .lab{display:flex;justify-content:space-between;font-weight:650;margin-top:8px;font-variant-numeric:tabular-nums}
@@ -114,7 +130,7 @@ td{padding:8px;text-align:center;border-bottom:1px solid #e1eaed;font-variant-nu
 .tip{position:absolute;pointer-events:none;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 18px rgba(8,36,61,.15);padding:8px 10px;font-size:12px;min-width:170px;display:none;z-index:5}
 .tip b{display:block;margin-bottom:4px}
 .tip .r{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
-.tip .r.cur{font-weight:800;color:var(--teal)}
+.tip .r.cur{font-weight:800;color:var(--blue)}
 /* janelas */
 .jgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
 .jk{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;border-top:5px solid var(--c)}
@@ -126,7 +142,7 @@ td{padding:8px;text-align:center;border-bottom:1px solid #e1eaed;font-variant-nu
 .jt td.rg{text-align:left;font-weight:800;vertical-align:top;padding-top:12px;background:#fafcfd;border-right:1px solid var(--line2)}
 .jt td.ar{text-align:left;font-weight:650;white-space:nowrap}
 .jt tr.tot td{background:#f2f9fa;font-weight:800}
-.jt tr.m3 td{background:#064f60;color:#fff;font-weight:800;border-color:#064f60}
+.jt tr.m3 td{background:var(--navy);color:#fff;font-weight:800;border-color:var(--navy)}
 .jt td.n{white-space:nowrap}.jt td.n small{color:var(--muted);font-weight:600}.jt tr.m3 td.n small{color:#cfe7ec}
 .stk{display:flex;height:16px;border-radius:5px;overflow:hidden;gap:2px;background:#fff;min-width:220px}
 .stk i{display:block;height:100%}
@@ -140,26 +156,26 @@ td{padding:8px;text-align:center;border-bottom:1px solid #e1eaed;font-variant-nu
 .reg .loc{font-weight:700}
 .reg .resp{font-size:12px;color:var(--muted)}
 .act{display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
-.act input[type=date]{padding:6px 8px;border:1px solid #b9ccd4;border-radius:7px}
-.btn{border:1px solid #b9ccd4;background:#fff;border-radius:7px;padding:6px 11px;font-weight:700;cursor:pointer;color:var(--teal)}
+.act input[type=date]{padding:6px 8px;border:1px solid #c9d1d6;border-radius:7px}
+.btn{border:1px solid #c9d1d6;background:#fff;border-radius:7px;padding:6px 11px;font-weight:700;cursor:pointer;color:var(--teal)}
 .btn:hover{background:var(--tealS)}
-.btn.pri{background:var(--teal2);border-color:var(--teal2);color:#fff}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff}
 .btn.pri:hover{background:var(--teal)}
 .btn.dng{color:var(--bad)}
 .btn.dng.sure{background:var(--bad);border-color:var(--bad);color:#fff}
 .btn:disabled{opacity:.5;cursor:wait}
 .note{font-size:12px;color:var(--muted)}
-.toast{position:fixed;right:22px;bottom:22px;z-index:50;background:#0d3b47;color:#fff;padding:12px 16px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:420px;opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none}
+.toast{position:fixed;right:22px;bottom:22px;z-index:50;background:var(--navy);color:#fff;padding:12px 16px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.2);max-width:420px;opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none}
 .toast.show{opacity:1;transform:none}
 .toast.err{background:var(--bad)}
 .alert{background:var(--badS);color:var(--bad);border:1px solid #f3c2c2;border-radius:10px;padding:12px 14px;margin-bottom:12px;display:none}
 /* estande */
 .efilt{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) minmax(280px,1.6fr);gap:10px;align-items:end;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:12px}
 .efilt label{display:flex;flex-direction:column;gap:4px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700}
-.efilt select,.efilt input[type=text],.efilt input[type=number]{padding:8px 9px;border:1px solid #b9ccd4;border-radius:8px;background:#fff;text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink);font-weight:400;min-width:0}
+.efilt select,.efilt input[type=text],.efilt input[type=number]{padding:8px 9px;border:1px solid #c9d1d6;border-radius:8px;background:#fff;text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink);font-weight:400;min-width:0}
 .faixa .lin{display:flex;gap:6px;align-items:center}
 .faixa input[type=number]{width:76px}
-.faixa .btn{padding:6px 9px;font-size:12px}
+.faixa .btn{padding:6px 9px;font-size:12px;white-space:nowrap}
 .dual{position:relative;height:22px;margin-top:2px}
 .dual input[type=range]{position:absolute;left:0;right:0;width:100%;top:0;margin:0;pointer-events:none;background:none;-webkit-appearance:none;appearance:none;height:22px}
 .dual input[type=range]::-webkit-slider-thumb{pointer-events:auto;-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#fff;border:3px solid var(--teal2);cursor:pointer;position:relative;z-index:2}
@@ -172,14 +188,14 @@ td{padding:8px;text-align:center;border-bottom:1px solid #e1eaed;font-variant-nu
 .esub{display:none}.esub.on{display:block}
 .bench{font-size:12px;color:var(--ink2);display:flex;gap:14px;flex-wrap:wrap;margin:-4px 0 12px}
 .bench span{display:inline-flex;gap:6px;align-items:center}.bench b{width:10px;height:10px;border-radius:2px;display:inline-block}
-.kpi.hl{border:2px solid var(--teal2);background:#f4fafb}
+.kpi.hl{border:2px solid var(--green);background:#fafbef}
 .statbar{display:flex;height:26px;border-radius:7px;overflow:hidden;gap:2px;margin:6px 0 4px}
 .statbar div{display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:800;min-width:0;white-space:nowrap;overflow:hidden}
 .stlg{display:flex;gap:16px;flex-wrap:wrap;font-size:12px;color:var(--ink2)}
 .stlg span{display:inline-flex;gap:6px;align-items:center}.stlg b{width:10px;height:10px;border-radius:2px;display:inline-block}
 .etbl{width:100%;border-collapse:collapse;font-size:13px}
 .etbl th{position:sticky;top:0;z-index:2;cursor:default;white-space:nowrap}
-.etbl th.s{cursor:pointer}.etbl th.s:hover{background:#0a6a7f}
+.etbl th.s{cursor:pointer}.etbl th.s:hover{background:#123d53}
 .etbl td{text-align:center;padding:7px 8px}
 .etbl td.t{text-align:left}
 .etbl tr.clk{cursor:pointer}.etbl tr.clk:hover td{background:#f4fafb}
@@ -194,41 +210,60 @@ td{padding:8px;text-align:center;border-bottom:1px solid #e1eaed;font-variant-nu
 .locs span{font-size:11px;padding:2px 6px;border-radius:8px;background:#edf2f4;white-space:nowrap}
 .locs span.r{background:var(--badS);color:var(--bad);font-weight:700}.locs span.a{background:var(--warnS);color:var(--warn);font-weight:700}
 .ctl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:10px;font-size:13px}
-.ctl input,.ctl select{padding:6px 8px;border:1px solid #b9ccd4;border-radius:7px;width:auto}
+.ctl input,.ctl select{padding:6px 8px;border:1px solid #c9d1d6;border-radius:7px;width:auto}
 .hm{border-collapse:separate;border-spacing:2px;font-size:12px}
 .hm th{background:#fff;color:var(--ink2);font-weight:700;padding:6px 4px;position:sticky;top:0;z-index:2;white-space:nowrap}
 .hm th.v{writing-mode:vertical-rl;transform:rotate(180deg);height:110px;text-align:left}
 .hm td{min-width:58px;text-align:center;padding:6px 4px;border-radius:4px;font-variant-numeric:tabular-nums;font-weight:600}
 .hm td.n{position:sticky;left:0;background:#fff;text-align:left;white-space:nowrap;font-weight:700;z-index:1;padding-right:10px}
 .hm td.na{background:#f7f9fa;color:#b5c3c9;font-weight:400}
-.grad{height:10px;width:260px;border-radius:5px;background:linear-gradient(90deg,#b71c1c,#f2b8b5 40%,#f4f6f7 50%,#b9d3ee 60%,#1e5aa8)}
+.grad{height:10px;width:260px;border-radius:5px;background:linear-gradient(90deg,#b71c1c,#f2b8b5 40%,#f4f6f7 50%,#bccde9 60%,#003DA6)}
 .files td{text-align:left}
-.drop{border:2px dashed #b9ccd4;border-radius:12px;padding:18px;text-align:center;color:var(--ink2);background:#fafcfd;cursor:pointer}
+.drop{border:2px dashed #c9d1d6;border-radius:12px;padding:18px;text-align:center;color:var(--ink2);background:#fafcfd;cursor:pointer}
 .drop.over{border-color:var(--teal2);background:var(--tealS)}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 @media(max-width:1000px){.efilt{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}
 @media(max-width:1000px){
-  header{flex-direction:column;align-items:stretch;background:var(--teal)}
-  header h1,header p{color:#fff}
+  .sb{position:static;width:auto;inset:auto}
+  .sb nav{display:flex;gap:4px;overflow-x:auto;padding:6px 10px}
+  .sb .grp,.sb .foot,.sb .app{display:none}.sb .logo{padding:12px 14px 4px}.sb .logo img{width:90px}
+  .nv{white-space:nowrap;width:auto}.nv.active:before{display:none}
+  .wrap{margin-left:0}
+  .top{flex-direction:column;align-items:stretch;padding:14px}
   .datebox{min-width:0}
   .kpis,.jgrid{grid-template-columns:repeat(2,1fr)}
   .jt{display:block;overflow-x:auto}
   .two,.cards{grid-template-columns:1fr}
   .head,.row,.total{grid-template-columns:1fr}.head{display:none}.cap{display:block}
-  .row>div,.total>div{border-right:0;padding:8px 13px}.tab{white-space:nowrap}
-  .status{display:none}
+  .row>div,.total>div{border-right:0;padding:8px 13px}
   main{padding:14px}
-  nav.tabs{padding:8px 14px 0;overflow-x:auto}
   .reg{display:block;overflow-x:auto}
 }
 </style>
 </head>
 <body>
-<header>
-  <div>
-    <h1>Gestão de Ensaios M3</h1>
-    <p>Progresso de semeadura, histórico na data e análise de estande</p>
-  </div>
+<aside class="sb">
+  <div class="logo"><img src="assets/gdm_logo_branco.png" alt="GDM"></div>
+  <div class="app"><b>Gestão de Ensaios M3</b>Rede de ensaios · M301 a M304</div>
+  <nav id="menu">
+    <div class="grp">Semeadura</div>
+    <button class="nv active" data-v="progress"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>Progresso</button>
+    <button class="nv" data-v="history"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Histórico na data</button>
+    <button class="nv" data-v="janelas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M8 2v4M16 2v4"/></svg>Janelas de semeadura</button>
+    <button class="nv" data-v="register"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-6-3.5-6-9a6 6 0 0 1 12 0c0 5.5-6 9-6 9z"/><path d="M12 8v5M9.5 10.5h5"/></svg>Registrar semeadura<span class="n" id="npend"></span></button>
+    <div class="grp">Análise de estande</div>
+    <button class="nv" data-v="estande" data-s="geral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>Visão geral</button>
+    <button class="nv" data-v="estande" data-s="ajuste"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Ajuste de semeadura</button>
+    <button class="nv" data-v="estande" data-s="rank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21V11M16 21V5M12 21v-6M4 21h16"/></svg>Piores e melhores</button>
+    <button class="nv" data-v="estande" data-s="mapa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>Mapa de calor</button>
+    <button class="nv" data-v="estande" data-s="parc"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Parcelas</button>
+    <button class="nv" data-v="estande" data-s="arq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6M12 18v-6M9 15l3-3 3 3"/></svg>Arquivos e importação</button>
+  </nav>
+  <div class="foot"><span id="lido"></span><button id="recarregar" title="Ler as planilhas de novo">↻ Atualizar dados</button></div>
+</aside>
+<div class="wrap">
+<div class="top">
+  <div><div class="crumb" id="crumb">Semeadura</div><h1 id="titulo">Progresso de semeadura</h1><p id="subtit"></p></div>
   <div class="datebox">
     <div class="lbl"><span>Situação em</span><span id="modo" class="badge"></span></div>
     <div class="ctl">
@@ -238,16 +273,7 @@ td{padding:8px;text-align:center;border-bottom:1px solid #e1eaed;font-variant-nu
       <button id="hoje" class="today" title="Voltar para hoje">Hoje</button>
     </div>
   </div>
-</header>
-
-<nav class="tabs">
-  <button class="tab active" data-v="progress">Progresso de semeadura</button>
-  <button class="tab" data-v="history">Histórico na data</button>
-  <button class="tab" data-v="janelas">Janelas de semeadura</button>
-  <button class="tab" data-v="register">Registrar semeadura<span class="n" id="npend"></span></button>
-  <button class="tab" data-v="estande">Análise de estande</button>
-  <div class="status"><span id="lido"></span><button id="recarregar" title="Ler a planilha de novo">↻ Atualizar</button></div>
-</nav>
+</div>
 
 <main>
   <div class="alert" id="alerta"></div>
@@ -331,7 +357,7 @@ td{padding:8px;text-align:center;border-bottom:1px solid #e1eaed;font-variant-nu
         <div class="dual"><div class="trk"></div><div class="sel" id="eSel"></div><input type="range" id="eRMin"><input type="range" id="eRMax"></div>
       </label>
     </div>
-    <div class="bench"><span><b style="background:var(--bad)"></b>Estande ruim: −15% ou pior</span><span><b style="background:#e0a100"></b>Atenção: entre −15% e −10%</span><span><b style="background:var(--teal3)"></b>Adequado: acima de −10%</span><span>Melhor estande = diferença próxima de 0</span></div>
+    <div class="bench"><span><b style="background:var(--bad)"></b>Estande ruim: −15% ou pior</span><span><b style="background:#e0a100"></b>Atenção: entre −15% e −10%</span><span><b style="background:var(--green)"></b>Adequado: acima de −10%</span><span><b style="background:var(--blue)"></b>Acima da população</span><span>Melhor estande = diferença próxima de 0</span></div>
     <div class="subtabs" id="eSubs">
       <button data-s="geral" class="on">Visão geral</button>
       <button data-s="ajuste">Ajuste de semeadura</button>
@@ -350,7 +376,7 @@ td{padding:8px;text-align:center;border-bottom:1px solid #e1eaed;font-variant-nu
           <div class="subtabs" style="margin:0" id="mModo"><button data-m="p" class="on">Por parcela</button><button data-m="c">Por cultivar</button></div></div>
         <div class="scroll" style="max-height:520px"><table class="etbl" id="mT"></table></div>
       </div>
-      <div class="card" style="padding:0;overflow:hidden"><div style="padding:14px 16px 0"><h3>Localidades</h3><div class="sub">Clique numa localidade para filtrar. A coluna "Filtro (NEO680)" mostra a média do NEO680 no local: se ele também ficou ruim, o problema tende a ser o local ou a semeadura, e não a semente.</div></div><div class="scroll"><table class="etbl" id="eLocT"></table></div></div>
+      <div class="card" style="padding:0;overflow:hidden"><div style="padding:14px 16px 0"><h3>Localidades</h3><div class="sub">Clique numa localidade para filtrar as outras análises.</div></div><div class="scroll"><table class="etbl" id="eLocT"></table></div></div>
     </div>
 
     <div class="esub" id="es-ajuste">
@@ -381,10 +407,12 @@ td{padding:8px;text-align:center;border-bottom:1px solid #e1eaed;font-variant-nu
       <div class="card"><h3>Incluir avaliações</h3><div class="sub">Arraste as planilhas .xlsx aqui ou clique para escolher. O painel reconhece o modelo de cada região (M301, M303, M304) pelo cabeçalho e lê a diferença (%). A localidade sai do nome do arquivo ou da coluna "Ensaio". Se mandar de novo a mesma localidade, vale o arquivo mais recente.</div>
         <div class="drop" id="eDrop">📄 Soltar planilhas aqui ou <b>clique para escolher</b><input type="file" id="eFile" accept=".xlsx" multiple hidden></div></div>
       <div class="card" style="padding:0;overflow:hidden"><table class="etbl files" id="fT"></table></div>
+      <div class="rule"><b>Precisa corrigir a população de algum material?</b> Clique em <b>Abrir no Excel</b> na planilha, corrija a população recomendada (Pop. Rec. / Densidade Final / Dens. Final), <b>salve e feche</b> o Excel e clique em <b>↻ Atualizar dados</b> no menu. A diferença (%) é recalculada pelas fórmulas da própria planilha quando você salva.</div>
       <div class="card"><h3>Nomes unificados</h3><div class="sub">Grafias diferentes que o painel está contando como o mesmo material (inclui as variações "Pop 1 / Pop 3"). Se faltar algum, cadastre em <b>dados/apelidos_materiais.csv</b>.</div><div id="uL"></div></div>
     </div>
   </section>
 </main>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -427,13 +455,22 @@ $('prox').onclick=()=>setData(somaDias(ref(),1));
 $('hoje').onclick=()=>setData(null);
 
 /* ---------- abas ---------- */
-document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{
-  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));
-  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='v-'+b.dataset.v));
-  document.querySelector('.datebox').style.visibility=b.dataset.v==='estande'?'hidden':'';
-  if(b.dataset.v==='estande')abrirEstande();
-  if(b.dataset.v==='history')desenhaGrafico();
+const TIT={progress:['Semeadura','Progresso de semeadura','Locais semeados por microrregião na data escolhida'],history:['Semeadura','Histórico na data','Safra atual comparada às anteriores no mesmo dia'],
+  janelas:['Semeadura','Janelas de semeadura','Abertura, intermediário e fechamento por área e região'],register:['Semeadura','Registrar semeadura','Grava a data direto na planilha da rede'],
+  geral:['Análise de estande','Visão geral','Quantas parcelas em cada faixa de diferença de população'],ajuste:['Análise de estande','Ajuste de semeadura','Cultivares que precisam de mais semente nos próximos plantios'],
+  rank:['Análise de estande','Piores e melhores cultivares','Ranking pela diferença média de população'],mapa:['Análise de estande','Mapa de calor','Diferença de cada cultivar em cada localidade'],
+  parc:['Análise de estande','Parcelas','Todas as parcelas avaliadas'],arq:['Análise de estande','Arquivos e importação','Incluir e conferir as planilhas de estande']};
+document.querySelectorAll('.nv').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.nv').forEach(x=>x.classList.toggle('active',x===b));
+  const v=b.dataset.v,t=TIT[b.dataset.s||v];
+  $('crumb').textContent=t[0];$('titulo').textContent=t[1];$('subtit').textContent=t[2];document.title=t[1]+' · Gestão de Ensaios M3';
+  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='v-'+v));
+  document.querySelector('.datebox').style.display=v==='estande'?'none':'';
+  if(v==='estande'){document.querySelector(`#eSubs [data-s="${b.dataset.s}"]`).click();abrirEstande()}
+  if(v==='history')desenhaGrafico();
+  window.scrollTo(0,0);
 });
+$('subtit').textContent=TIT.progress[2];
 
 /* ---------- PROGRESSO ---------- */
 function met(x,cap=''){return`<div class="met"><div class="cap">${cap}</div><div class="frac">${x.done} / ${x.total}</div><div class="bar"><div class="fill" style="width:${pc(x)}%"></div></div><div class="pct">${x.total?pc(x)+'%':'–'}</div></div>`}
@@ -501,19 +538,19 @@ function desenhaGrafico(){
   const caminho=(s,ate)=>{let p='';for(let d=x0;d<=ate;d++){const y=Y(acum(s,d));p+=(p?'L':'M')+X(d).toFixed(1)+','+y.toFixed(1)}return p};
   let g='';
   [0,25,50,75,100].forEach(p=>g+=`<line x1="${m.l}" x2="${W-m.r}" y1="${Y(p)}" y2="${Y(p)}" stroke="#e6eef1"/><text x="${m.l-8}" y="${Y(p)+4}" text-anchor="end" font-size="11" fill="#6b7f8a">${p}%</text>`);
-  for(let d=x0;d<=x1;d++){const s=dataDoDia(d),[,mm,dd]=partes(s);if(dd===1||dd===15)g+=`<line x1="${X(d)}" x2="${X(d)}" y1="${m.t+ih}" y2="${m.t+ih+4}" stroke="#b9ccd4"/><text x="${X(d)}" y="${H-8}" text-anchor="middle" font-size="11" fill="#6b7f8a">${pad(dd)}/${MES[mm-1]}</text>`}
+  for(let d=x0;d<=x1;d++){const s=dataDoDia(d),[,mm,dd]=partes(s);if(dd===1||dd===15)g+=`<line x1="${X(d)}" x2="${X(d)}" y1="${m.t+ih}" y2="${m.t+ih+4}" stroke="#c9d1d6"/><text x="${X(d)}" y="${H-8}" text-anchor="middle" font-size="11" fill="#6b7f8a">${pad(dd)}/${MES[mm-1]}</text>`}
   const ordem=[...series.filter(s=>!s.cur&&!s.prev),...series.filter(s=>s.prev),series[0]];
-  ordem.forEach(s=>{const cor=s.cur?'#00697d':s.prev?'#c4711a':'#a9b8bf',w=s.cur?3:s.prev?2:1.5;
+  ordem.forEach(s=>{const cor=s.cur?'#003DA6':s.prev?'#B67F5A':'#c3c6c9',w=s.cur?3:s.prev?2:1.5;
     g+=`<path d="${caminho(s,s.cur?Math.min(s.fim,x1):x1)}" fill="none" stroke="${cor}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round" ${s.cur||s.prev?'':'opacity=".8"'}/>`});
   const xr=X(Math.min(series[0].fim,x1));
   g+=`<line x1="${xr}" x2="${xr}" y1="${m.t}" y2="${m.t+ih}" stroke="#08243d" stroke-dasharray="4 4" opacity=".55"/><text x="${xr+5}" y="${m.t+11}" font-size="11" font-weight="700" fill="#08243d">${fmtc(r)}</text>`;
   const ca=acum(series[0],series[0].fim);
-  g+=`<circle cx="${xr}" cy="${Y(ca)}" r="5" fill="#00697d" stroke="#fff" stroke-width="2"/>`;
+  g+=`<circle cx="${xr}" cy="${Y(ca)}" r="5" fill="#003DA6" stroke="#fff" stroke-width="2"/>`;
   g+=`<line id="cx" y1="${m.t}" y2="${m.t+ih}" stroke="#40596a" opacity="0" /><g id="dots"></g><rect id="hit" x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent"/>`;
   box.querySelector('svg')?.remove();
   box.insertAdjacentHTML('afterbegin',`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolução da semeadura acumulada por safra">${g}</svg>`);
   const prev=series.find(s=>s.prev), outras=series.filter(s=>!s.cur&&!s.prev);
-  $('leg').innerHTML=`<span><i style="background:#00697d;height:4px"></i>Safra ${D.safra} (atual)</span>`+(prev?`<span><i style="background:#c4711a"></i>Safra ${prev.sf}</span>`:'')+(outras.length?`<span><i style="background:#a9b8bf"></i>Safras ${outras[outras.length-1].sf} a ${outras[0].sf}</span>`:'');
+  $('leg').innerHTML=`<span><i style="background:#003DA6;height:4px"></i>Safra ${D.safra} (atual)</span>`+(prev?`<span><i style="background:#B67F5A"></i>Safra ${prev.sf}</span>`:'')+(outras.length?`<span><i style="background:#c3c6c9"></i>Safras ${outras[outras.length-1].sf} a ${outras[0].sf}</span>`:'');
   const svg=box.querySelector('svg'),tip=$('tip'),cx=svg.querySelector('#cx'),dots=svg.querySelector('#dots');
   const hit=svg.querySelector('#hit');
   hit.onmousemove=e=>{
@@ -521,7 +558,7 @@ function desenhaGrafico(){
     const d=Math.round(x0+(px-m.l)/iw*(x1-x0)); if(d<x0||d>x1)return;
     cx.setAttribute('x1',X(d));cx.setAttribute('x2',X(d));cx.setAttribute('opacity','.4');
     const vis=series.filter(s=>!s.cur||d<=s.fim).map(s=>({s,p:acum(s,d)})).sort((a,b)=>b.p-a.p);
-    dots.innerHTML=vis.filter(v=>v.s.cur||v.s.prev).map(v=>`<circle cx="${X(d)}" cy="${Y(v.p)}" r="4" fill="${v.s.cur?'#00697d':'#c4711a'}" stroke="#fff" stroke-width="2"/>`).join('');
+    dots.innerHTML=vis.filter(v=>v.s.cur||v.s.prev).map(v=>`<circle cx="${X(d)}" cy="${Y(v.p)}" r="4" fill="${v.s.cur?'#003DA6':'#B67F5A'}" stroke="#fff" stroke-width="2"/>`).join('');
     tip.innerHTML=`<b>${fmtc(dataDoDia(d))}</b>`+vis.map(v=>`<div class="r ${v.s.cur?'cur':''}"><span>${v.s.sf}${v.s.cur?' (atual)':''}</span><span>${Math.round(v.p)}%</span></div>`).join('');
     tip.style.display='block';
     const left=(X(d)*bb.width/W)+14; tip.style.left=(left+tip.offsetWidth>bb.width?left-tip.offsetWidth-28:left)+'px'; tip.style.top='10px';

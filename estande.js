@@ -2,7 +2,7 @@
 let ES = null, eSub = 'geral', eConf = null, eArr = null, eArrFim = null;
 document.addEventListener('mouseup', () => { if (eArr != null && !document.getElementById('eHist').matches(':hover')) eArr = null });
 const RUIM = -15, ATENC = -10;
-const COR = { r: '#c62828', a: '#e0a100', o: '#00697d', p: '#1e5aa8' };
+const COR = { r: '#c62828', a: '#e0a100', o: '#B4BD00', p: '#003DA6' };
 const st = d => d <= RUIM ? 'r' : d <= ATENC ? 'a' : 'o';
 const STN = { r: 'Ruim', a: 'Atenção', o: 'Adequado' };
 const pp = d => (d > 0 ? '+' : '') + d.toFixed(1).replace('.', ',') + '%';
@@ -141,8 +141,8 @@ function rGeral(B) {
     const d = o.v.map(r => r.dif), pior = o.v.reduce((a, b) => a.dif < b.dif ? a : b);
     return { loc, micro: o.micro, n: d.length, m: media(d), t: T[loc], ruim: d.filter(x => x <= RUIM).length, pior };
   }).sort((a, b) => a.m - b.m);
-  $('eLocT').innerHTML = `<thead><tr><th style="text-align:left">Localidade</th><th>Região</th><th>Parcelas</th><th>Dif. média</th><th>Filtro (NEO680)</th><th>Ruins</th><th style="text-align:left">Pior material</th></tr></thead><tbody>` +
-    linhas.map(x => `<tr class="clk" data-loc="${esc(x.loc)}"><td class="t"><b>${esc(x.loc)}</b></td><td>${x.micro}</td><td>${x.n}</td><td>${difHtml(x.m)}</td><td>${difHtml(x.t)}</td><td>${x.ruim ? `<span class="chip bad">${x.ruim}</span>` : '0'}</td><td class="t">${esc(x.pior.nome)} ${difHtml(x.pior.dif)}</td></tr>`).join('') + '</tbody>';
+  $('eLocT').innerHTML = `<thead><tr><th style="text-align:left">Localidade</th><th>Região</th><th>Parcelas</th><th>Dif. média</th><th>Ruins</th><th style="text-align:left">Pior material</th></tr></thead><tbody>` +
+    linhas.map(x => `<tr class="clk" data-loc="${esc(x.loc)}"><td class="t"><b>${esc(x.loc)}</b></td><td>${x.micro}</td><td>${x.n}</td><td>${difHtml(x.m)}</td><td>${x.ruim ? `<span class="chip bad">${x.ruim}</span>` : '0'}</td><td class="t">${esc(x.pior.nome)} ${difHtml(x.pior.dif)}</td></tr>`).join('') + '</tbody>';
   $('eLocT').querySelectorAll('tr.clk').forEach(tr => tr.onclick = () => { $('eLoc').value = tr.dataset.loc; renderEstande() });
   materiaisFaixa(B);
 }
@@ -220,7 +220,7 @@ function rRank(B) {
 }
 
 function corHeat(d) {
-  const t = Math.max(-1, Math.min(1, d / 30)), a = Math.abs(t), base = [244, 246, 247], fim = t < 0 ? [183, 28, 28] : [30, 90, 168];
+  const t = Math.max(-1, Math.min(1, d / 30)), a = Math.abs(t), base = [244, 246, 247], fim = t < 0 ? [183, 28, 28] : [0, 61, 166];
   const c = base.map((v, i) => Math.round(v + (fim[i] - v) * Math.pow(a, .8)));
   return `background:rgb(${c});color:${a > .55 ? '#fff' : '#08243d'}`;
 }
@@ -273,7 +273,10 @@ $('pCsv').onclick = () => {
 
 function rArq() {
   $('fT').innerHTML = `<thead><tr><th style="text-align:left">Arquivo</th><th>Situação</th><th>Modelo</th><th>Localidade</th><th>Região</th><th>Parcelas</th><th>Materiais</th><th></th></tr></thead><tbody>` +
-    ES.arquivos.map(a => `<tr><td class="t"><b>${esc(a.arquivo)}</b></td><td>${!a.ok ? `<span class="chip bad" title="${esc(a.erro)}">Erro</span><div class="note">${esc(a.erro)}</div>` : a.ignorado ? `<span class="chip warn">Ignorado</span><div class="note">${esc(a.ignorado)}</div>` : '<span class="chip ok">Lido</span>'}</td><td>${esc(a.formato || '')}</td><td>${esc(a.local || '')}</td><td>${a.micro || ''}</td><td>${a.parcelas ?? ''}</td><td>${a.materiais ?? ''}</td><td><button class="btn dng ${eConf === a.arquivo ? 'sure' : ''}" data-rm="${esc(a.arquivo)}">${eConf === a.arquivo ? 'Confirmar' : 'Remover'}</button></td></tr>`).join('') + '</tbody>';
+    ES.arquivos.map(a => `<tr><td class="t"><b>${esc(a.arquivo)}</b></td><td>${!a.ok ? `<span class="chip bad" title="${esc(a.erro)}">Erro</span><div class="note">${esc(a.erro)}</div>` : a.ignorado ? `<span class="chip warn">Ignorado</span><div class="note">${esc(a.ignorado)}</div>` : '<span class="chip ok">Lido</span>'}</td><td>${esc(a.formato || '')}</td><td>${esc(a.local || '')}</td><td>${a.micro || ''}</td><td>${a.parcelas ?? ''}</td><td>${a.materiais ?? ''}</td><td style="white-space:nowrap"><button class="btn" data-xl="${esc(a.arquivo)}">Abrir no Excel</button> <button class="btn dng ${eConf === a.arquivo ? 'sure' : ''}" data-rm="${esc(a.arquivo)}">${eConf === a.arquivo ? 'Confirmar' : 'Remover'}</button></td></tr>`).join('') + '</tbody>';
+  $('fT').querySelectorAll('[data-xl]').forEach(b => b.onclick = async () => {
+    try { const r = await fetch('/api/estande/abrir', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ arquivo: b.dataset.xl }) }), j = await r.json(); if (!r.ok) throw new Error(j.erro); toast('Abrindo no Excel. Depois de salvar e fechar, clique em ↻ Atualizar dados.') } catch (e) { toast(e.message, true) }
+  });
   $('fT').querySelectorAll('[data-rm]').forEach(b => b.onclick = async () => {
     const f = b.dataset.rm;
     if (eConf !== f) { eConf = f; rArq(); setTimeout(() => { if (eConf === f) { eConf = null; rArq() } }, 5000); return }

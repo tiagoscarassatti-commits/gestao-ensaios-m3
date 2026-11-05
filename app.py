@@ -55,6 +55,23 @@ def estande():
     return E.scan()
 
 
+def abrir_estande(corpo):
+    """Abre a planilha de estande no programa padrão (Excel) do computador."""
+    import os
+    import subprocess
+    import sys
+    alvo = E.UP / Path(str(corpo.get('arquivo', ''))).name
+    if not alvo.exists():
+        raise ValueError('Arquivo não encontrado.')
+    if sys.platform.startswith('win'):
+        os.startfile(str(alvo))  # noqa: S606 - arquivo local escolhido no painel
+    elif sys.platform == 'darwin':
+        subprocess.Popen(['open', str(alvo)])
+    else:
+        subprocess.Popen(['xdg-open', str(alvo)])
+    return {'ok': True}
+
+
 def remover_estande(corpo):
     nome = Path(str(corpo.get('arquivo', ''))).name
     alvo = E.UP / nome
@@ -252,6 +269,8 @@ class H(SimpleHTTPRequestHandler):
                         (E.UP / fn).write_bytes(x.get_payload(decode=True))
                         saved.append(fn)
                 return self.j({'saved': saved, 'result': estande()})
+            if p == '/api/estande/abrir':
+                return self.j(abrir_estande(json.loads(body.decode('utf-8'))))
             if p == '/api/estande/remover':
                 return self.j(remover_estande(json.loads(body.decode('utf-8'))))
         except Exception as e:

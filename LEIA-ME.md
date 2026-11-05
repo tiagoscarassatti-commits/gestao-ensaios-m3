@@ -69,3 +69,12 @@ Cada região pode ter o seu modelo. O painel acha sozinho as colunas de **materi
 A localidade sai do nome do arquivo (ex.: `Estande Inicial - Rio Verde_2.xlsx`) ou da coluna "Ensaio". Se você mandar duas planilhas da mesma localidade, vale a mais recente.
 
 Os nomes dos materiais são unificados: maiúsculas/minúsculas, acentos, espaços, marca (BRASMAX, STINE, DAGMA/DAG), tecnologia (I2X, IPRO, CE) e "Pop 1/Pop 3" não diferenciam o material. Assim, `DAG 6525 I2X`, `6525 I2X` e `DAGMA 6525 I2X POP 3` contam como o mesmo, e `SBQ 268809` = `SBQ268809`. Para casos que escaparem, use `dados/apelidos_materiais.csv` (`grafia;nome padrão`).
+
+## Corrigir a população de um material numa planilha de estande
+
+1. Menu **Arquivos e importação** → **Abrir no Excel** na planilha.
+2. Corrija a população recomendada (Pop. Rec. / Densidade Final / Dens. Final) dos materiais.
+3. **Salve e feche** o Excel. A diferença (%) é recalculada pelas fórmulas da planilha.
+4. Clique em **↻ Atualizar dados** no menu.
+
+Também dá para corrigir a planilha em outro lugar e arrastar de novo em *Incluir avaliações*. Se o nome do arquivo for o mesmo, ela substitui a antiga.
