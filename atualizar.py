@@ -1,6 +1,6 @@
 """Atualiza o painel com a versão mais nova do GitHub antes de abrir.
 
-Só funciona se existir o arquivo token_github.txt nesta pasta (veja o LEIA-ME).
+Na primeira execução pede o token do GitHub e salva em token_github.txt.
 Nunca mexe na pasta dados/ (planilhas, backups e registros ficam intactos).
 Se estiver sem internet ou der qualquer erro, apenas abre a versão atual.
 """
@@ -27,9 +27,45 @@ def baixar(url, accept):
         return r.read()
 
 
+LINK_TOKEN = ('https://github.com/settings/personal-access-tokens/new'
+              '?name=painel-m3&description=Atualizar+painel+Gestao+de+Ensaios+M3'
+              '&expires_in=365&contents=read')
+
+
+def configurar_token():
+    """Primeira execução: abre a página do GitHub e pede para colar o token."""
+    import webbrowser
+    print()
+    print('=' * 64)
+    print(' CONFIGURAR ATUALIZACAO AUTOMATICA (so na primeira vez)')
+    print('=' * 64)
+    print(' Vou abrir o GitHub no navegador. Na pagina:')
+    print('  1. Em "Repository access", marque "Only select repositories"')
+    print('     e escolha  gestao-ensaios-m3')
+    print('  2. Confira em Permissions > Contents = Read-only')
+    print('  3. Clique em "Generate token" e copie o token (github_pat_...)')
+    print()
+    try:
+        webbrowser.open(LINK_TOKEN)
+    except Exception:
+        print(' Abra este link:', LINK_TOKEN)
+    try:
+        tok = input(' Cole o token aqui e tecle Enter (ou so Enter para pular): ').strip()
+    except EOFError:
+        tok = ''
+    TOKEN.write_text(tok, encoding='utf-8')
+    if tok:
+        print(' Token salvo. A partir de agora o painel se atualiza sozinho.')
+    else:
+        print(' Pulado. Para configurar depois, apague o arquivo token_github.txt.')
+    print()
+
+
 def main():
     if not TOKEN.exists():
-        print('Atualização automática desligada (falta o token_github.txt).')
+        configurar_token()
+    if not TOKEN.read_text(encoding='utf-8').strip():
+        print('Atualização automática desligada (token_github.txt vazio).')
         return
     try:
         sha = baixar('https://api.github.com/repos/%s/commits/main' % REPO, 'application/vnd.github.sha').decode().strip()

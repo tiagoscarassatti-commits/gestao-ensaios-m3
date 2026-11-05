@@ -25,19 +25,14 @@ Para trocar de safra, coloque a nova `Rede complementar AAAA.xlsx` em `dados/`. 
 
 ## Atualização automática (sem baixar ZIP)
 
-Configure uma vez e o `iniciar_dashboard.bat` passa a buscar sozinho a versão mais nova no GitHub toda vez que você abre o painel. A pasta `dados/` nunca é tocada. Se estiver sem internet, ele só abre a versão atual.
+Na **primeira vez** que você abre o `iniciar_dashboard.bat`:
 
-1. No GitHub: foto do perfil → **Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token**.
-2. Dê um nome (ex.: `painel-m3`) e uma validade (ex.: 1 ano).
-3. Em **Repository access**, escolha *Only select repositories* → `gestao-ensaios-m3`.
-4. Em **Permissions → Repository permissions → Contents**, escolha **Read-only**.
-5. Gere o token, copie e salve num arquivo chamado `token_github.txt` aqui na pasta do painel, só com o token dentro.
+- ele cria o atalho **Gestao de Ensaios M3** na área de trabalho;
+- abre a página do GitHub para gerar um token de leitura. Nela, em *Repository access*, escolha *Only select repositories* → `gestao-ensaios-m3`, confira *Contents = Read-only*, clique em *Generate token* e cole o token na janela preta.
 
-O token só dá permissão de leitura neste repositório e não vai para o GitHub (está no `.gitignore`).
+Depois disso, cada vez que abrir pelo atalho, o painel busca sozinho a versão mais nova no GitHub. A pasta `dados/` nunca é tocada, e se estiver sem internet ele só abre a versão atual.
 
-Dica: clique com o botão direito no `iniciar_dashboard.bat` → *Enviar para → Área de trabalho (criar atalho)* para abrir com um clique.
-
-Sem o token, dá para atualizar à mão: *Code → Download ZIP* no GitHub e extrair por cima da pasta. A pasta `dados/` não está no ZIP, então seus registros ficam intactos.
+O token fica salvo em `token_github.txt`, só lê este repositório e não vai para o GitHub. Para refazer a configuração, apague esse arquivo. Para pular, tecle Enter sem colar nada.
 
 ## Abas
 
